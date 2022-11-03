@@ -39,7 +39,7 @@
 #include <string.h>
 
 #include "chip.h"
-#include "stm32.h"
+// #include "stm32.h"
 
 #include <errno.h>
 

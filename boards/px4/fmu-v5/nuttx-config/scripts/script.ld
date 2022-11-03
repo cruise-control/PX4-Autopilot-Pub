@@ -141,6 +141,10 @@ SECTIONS
 
 	_eronly = ABSOLUTE(.);
 
+	.app_bl_shared : {
+		_sapp_bl_shared = ABSOLUTE(.);
+	} > shared_sram
+
 	.data : {
 		_sdata = ABSOLUTE(.);
 		*(.data .data.*)

@@ -83,8 +83,8 @@ uint16_t board_get_can_interfaces(void)
 /* Configuration ********************************************************************/
 
 #if defined(CONFIG_STM32_CAN1) && defined(CONFIG_STM32_CAN2)
-#  warning "Both CAN1 and CAN2 are enabled.  Assuming only CAN1."
-#  undef CONFIG_STM32_CAN2
+#  warning "Both CAN1 and CAN2 are enabled.  Assuming only CAN2."
+#  undef CONFIG_STM32_CAN1
 #endif
 
 #ifdef CONFIG_STM32_CAN1

@@ -143,7 +143,7 @@ SECTIONS
 
 	.app_bl_shared : {
 		_sapp_bl_shared = ABSOLUTE(.);
-	} > shared_sram
+	} > SRAM1
 
 	.data : {
 		_sdata = ABSOLUTE(.);

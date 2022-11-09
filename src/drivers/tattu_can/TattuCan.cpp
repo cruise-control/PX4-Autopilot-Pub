@@ -59,6 +59,7 @@ TattuCan::TattuCan() :
 
 TattuCan::~TattuCan()
 {
+	// TODO Close the CAN port here if it was opened and clean up gracefully
 }
 
 void TattuCan::Run()
@@ -113,6 +114,11 @@ void TattuCan::Run()
 		battery_status.id = 111;
 		battery_status.cycle_count = count;
 		battery_status.voltage_cell_v[0] = -1.0;
+		battery_status.voltage_v = -1.1;
+		battery_status.current_a = 5.0;
+		battery_status.full_charge_capacity_wh = 100.0;
+		battery_status.remaining_capacity_wh = battery_status.full_charge_capacity_wh * .95f;
+		battery_status.temperature = 30;
 
 		_battery_status_pub.publish(battery_status);
 		return;

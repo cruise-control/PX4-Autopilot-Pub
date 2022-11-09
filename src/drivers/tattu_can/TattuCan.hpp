@@ -93,14 +93,23 @@ public:
 
 	int16_t receive(CanFrame *received_frame);
 
+	void set_test_mode(bool mode);
+	bool get_test_mode();
+
+	/**
+	 * Diagnostics - print some basic information about the driver.
+	 */
+	int print_status() override;
+
 private:
-	static constexpr uint32_t SAMPLE_RATE{100}; // samples per second (10ms)
+	static constexpr uint32_t SAMPLE_RATE{20}; // samples per second
 	static constexpr size_t TAIL_BYTE_START_OF_TRANSFER{128};
 
 	void Run() override;
 
 	int _fd{-1};
 	bool _initialized{false};
+	bool _test_mode{false};
 
 	uORB::Publication<battery_status_s> _battery_status_pub{ORB_ID::battery_status};
 };

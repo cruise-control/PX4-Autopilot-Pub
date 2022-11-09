@@ -103,6 +103,20 @@ void TattuCan::Run()
 
 	Tattu12SBatteryMessage tattu_message = {};
 
+	if (_test_mode) {
+		static uint16_t count = 0;
+		count++;
+		battery_status_s battery_status = {};
+		battery_status.timestamp = hrt_absolute_time();
+		battery_status.connected = true;
+		battery_status.cell_count = 12;
+		battery_status.id = 111;
+		battery_status.cycle_count = count;
+
+		_battery_status_pub.publish(battery_status);
+		return;
+	}
+
 	while (receive(&received_frame) > 0) {
 
 		// Find the start of a transferr
@@ -207,6 +221,16 @@ int TattuCan::start()
 	return PX4_OK;
 }
 
+void TattuCan::set_test_mode(bool mode)
+{
+	_test_mode = mode;
+}
+
+bool TattuCan::get_test_mode()
+{
+	return _test_mode;
+}
+
 int TattuCan::task_spawn(int argc, char *argv[])
 {
 	TattuCan *instance = new TattuCan();
@@ -239,8 +263,16 @@ Driver for reading data from the Tattu 12S 16000mAh smart battery.
 	PRINT_MODULE_USAGE_NAME("tattu_can", "system");
 	PRINT_MODULE_USAGE_COMMAND("start");
 	PRINT_MODULE_USAGE_DEFAULT_COMMANDS();
+	PRINT_MODULE_USAGE_COMMAND_DESCR("test", "Generates and publishes dummy data");
 
 	return 0;
+}
+
+int TattuCan::print_status()
+{
+	PX4_INFO("Initialized %s", _initialized?"Yes":"No");
+	PX4_INFO("Test Mode %s", _test_mode?"On":"Off");
+	return PX4_OK;
 }
 
 int TattuCan::custom_command(int argc, char *argv[])
@@ -248,6 +280,19 @@ int TattuCan::custom_command(int argc, char *argv[])
 	if (!is_running()) {
 		PX4_INFO("not running");
 		return PX4_ERROR;
+	}
+
+	if(argc <= 0){
+		PX4_INFO("no command");
+		return PX4_ERROR;
+	}
+
+	if (strcmp(argv[0], "test") == 0) {
+		bool mode = get_instance()->get_test_mode();
+		mode = !mode;
+		mavlink_log_info(&_mavlink_log_pub, "Test Mode changed to %s",mode? "On":"Off");
+		get_instance()->set_test_mode(mode);
+		return PX4_OK;
 	}
 
 	return print_usage("Unrecognized command.");

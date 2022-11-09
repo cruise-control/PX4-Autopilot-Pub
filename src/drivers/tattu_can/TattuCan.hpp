@@ -38,7 +38,7 @@
 #include <px4_platform_common/module.h>
 #include <px4_platform_common/px4_work_queue/ScheduledWorkItem.hpp>
 
-#include <uORB/Publication.hpp>
+#include <uORB/PublicationMulti.hpp>
 #include <uORB/topics/battery_status.h>
 
 using namespace time_literals;
@@ -111,5 +111,5 @@ private:
 	bool _initialized{false};
 	bool _test_mode{false};
 
-	uORB::Publication<battery_status_s> _battery_status_pub{ORB_ID::battery_status};
+	uORB::PublicationMulti<battery_status_s> _battery_status_pub{ORB_ID(battery_status)};
 };

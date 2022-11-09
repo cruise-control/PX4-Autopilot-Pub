@@ -112,6 +112,7 @@ void TattuCan::Run()
 		battery_status.cell_count = 12;
 		battery_status.id = 111;
 		battery_status.cycle_count = count;
+		battery_status.voltage_cell_v[0] = -1.0;
 
 		_battery_status_pub.publish(battery_status);
 		return;

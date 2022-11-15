@@ -607,24 +607,26 @@ extern "C" int uavcannode_start(int argc, char *argv[])
 	// Did the bootloader auto baud and get a node ID Allocated
 	bootloader_app_shared_t shared;
 	int valid = bootloader_app_shared_read(&shared, BootLoader);
+	UNUSED(valid);
 
-	if (valid == 0) {
+	// if (valid == 0) {
 
-		bitrate = shared.bus_speed;
-		node_id = shared.node_id;
+	// 	bitrate = shared.bus_speed;
+	// 	node_id = shared.node_id;
 
-		// Invalidate to prevent deja vu
-		bootloader_app_shared_invalidate();
+	// 	// Invalidate to prevent deja vu
+	// 	bootloader_app_shared_invalidate();
 
-	} else {
+	// } else
+	{
 		// Node ID
-#if defined(SUPPORT_ALT_CAN_BOOTLOADER)
-		if (!board_booted_by_px4()) {
-			node_id = 0;
-			bitrate = 1000000;
+// #if defined(SUPPORT_ALT_CAN_BOOTLOADER)
+// 		if (!board_booted_by_px4()) {
+// 			node_id = 0;
+// 			bitrate = 1000000;
 
-		} else
-#endif
+// 		} else
+// #endif
 		{
 			(void)param_get(param_find("CANNODE_NODE_ID"), &node_id);
 			(void)param_get(param_find("CANNODE_BITRATE"), &bitrate);

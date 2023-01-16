@@ -91,5 +91,5 @@ then
 	px4flow start -X &
 fi
 
-uavcannode start
+# uavcannode start
 unset R

@@ -47,6 +47,35 @@
 #include "TattuCan.hpp"
 #include "stm32_can.h"
 #include <systemlib/mavlink_log.h>
+#include <net/if.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <nuttx/can.h>
+#include <netpacket/can.h>
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <stdint.h>
+// #include <inttypes.h>
+// #include <unistd.h>
+// #include <string.h>
+// #include <signal.h>
+// #include <ctype.h>
+// #include <libgen.h>
+// #include <time.h>
+// #include <errno.h>
+// #include "../../../platforms/nuttx/NuttX/nuttx/include/nuttx/can.h"
+
+// #include <sys/time.h>
+// #include <sys/types.h>
+// #include <sys/socket.h>
+// #include <sys/ioctl.h>
+// #include <sys/uio.h>
+// #include <net/if.h>
+
+
 
 // extern orb_advert_t mavlink_log_pub;
 
@@ -59,39 +88,131 @@ TattuCan::TattuCan() :
 
 TattuCan::~TattuCan()
 {
-	// TODO Close the CAN port here if it was opened and clean up gracefully
+
+	if (_fd < 0) {
+		return;
+	}
+
+	::close(_fd);
+
+	_initialized = false;
 }
+
+int TattuCan::init_socket()
+{
+	const char *const can_iface_name = "can1";
+
+	struct ifreq ifr;
+	struct sockaddr_can addr;
+
+	PX4_INFO("tattu can bus\n");
+	if ((_sk = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
+		PX4_ERR("Error opening CAN socket\n");
+		return -1;
+	}
+
+	strncpy(ifr.ifr_name, can_iface_name, IFNAMSIZ - 1);
+	ifr.ifr_name[IFNAMSIZ - 1] = '\0';
+	ifr.ifr_ifindex = if_nametoindex(ifr.ifr_name);
+
+	if (!ifr.ifr_ifindex) {
+		mavlink_log_info(&_mavlink_log_pub, "Failed to find %s device", ifr.ifr_name);
+		return -1;
+	}
+
+	mavlink_log_info(&_mavlink_log_pub, "CAN Index found %d", ifr.ifr_ifindex);
+
+	memset(&addr, 0, sizeof(struct sockaddr));
+	addr.can_family  = AF_CAN;
+	addr.can_ifindex = ifr.ifr_ifindex;
+
+	const int on = 1;
+	/* RX Timestamping */
+
+	// if (setsockopt(_sk, SOL_SOCKET, SO_TIMESTAMP, &on, sizeof(on)) < 0) {
+	// 	PX4_INFO("SO_TIMESTAMP is disabled %d", get_errno());
+	// 	// return -1;
+	// }
+
+	if (can_fd) {
+		if (setsockopt(_sk, SOL_CAN_RAW, CAN_RAW_FD_FRAMES, &on, sizeof(on)) < 0) {
+			PX4_ERR("no CAN FD support %d", get_errno());
+			return -1;
+		}
+	}
+
+	if (bind(_sk, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+		PX4_ERR("bind error number %d", get_errno());
+		return -1;
+	}
+
+	// Bring up the interface as it will be down initially (and won't auto-come up)
+	ifr.ifr_flags |= IFF_UP;
+	ioctl(_sk, SIOCSIFFLAGS, &ifr);
+
+	// setsockopt(_sk, SOL_CAN_RAW, CAN_RAW_FILTER, NULL, 0);
+
+	// if (bind(_sk, (struct sockaddr *)&addr, sizeof(struct sockaddr)) < 0) {
+	// 	PX4_ERR("bind error\n");
+	// 	return -1;
+	// }
+
+	/* CAN interface ready to be used */
+
+	PX4_INFO("CAN socket open\n");
+
+	// struct can_filter rfilter[1];
+	// rfilter[0].can_id   = 0x1092;	// Data Type ID
+	// rfilter[0].can_mask = 0xFFFF;
+
+	// setsockopt(_sk, SOL_CAN_RAW, CAN_RAW_FILTER, rfilter, sizeof(rfilter));
+
+	// Setup RX msg
+	_recv_iov.iov_base = &_recv_frame;
+
+	if (can_fd) {
+		_recv_iov.iov_len = sizeof(struct canfd_frame);
+
+	} else {
+		_recv_iov.iov_len = sizeof(struct can_frame);
+	}
+
+	memset(_recv_control, 0x00, sizeof(_recv_control));
+
+	_recv_msg.msg_iov = &_recv_iov;
+	_recv_msg.msg_iovlen = 1;
+	_recv_msg.msg_control = &_recv_control;
+	_recv_msg.msg_controllen = sizeof(_recv_control);
+	_recv_cmsg = CMSG_FIRSTHDR(&_recv_msg);
+
+	return 0;
+
+}
+#define USE_SOCK_CAN 1
 
 void TattuCan::Run()
 {
+	// static hrt_abstime timer;
 	if (should_exit()) {
 		exit_and_cleanup();
 		return;
 	}
 
 	if (!_initialized) {
+		// timer = hrt_absolute_time();
 
-		struct can_dev_s *can = stm32_caninitialize(2);
+#if USE_SOCK_CAN
 
-		if (can == nullptr) {
-			PX4_ERR("Failed to get CAN interface");
-
-		} else {
-			/* Register the CAN driver at "/dev/can0" */
-			int ret = can_register("/dev/can0", can);
-
-			if (ret < 0) {
-				PX4_ERR("can_register failed: %d", ret);
-
-			}
-		}
-
+		init_socket();
+#else
 		_fd = ::open("/dev/can0", O_RDWR);
 
 		if (_fd < 0) {
 			PX4_INFO("FAILED TO OPEN /dev/can0");
 			return;
 		}
+#endif
+
 
 		mavlink_log_info(&_mavlink_log_pub, "[TUC] Initialized");
 
@@ -125,7 +246,12 @@ void TattuCan::Run()
 	}
 
 	while (receive(&received_frame) > 0) {
-
+		// if(hrt_elapsed_time(&timer) > 1*1E6)
+		// {
+		// 	PX4_INFO("Got %d bytes from can",received_frame.payload_size);
+		// 	timer = hrt_absolute_time();
+		// 	UNUSED(timer);
+		// }
 		// Find the start of a transferr
 		if ((received_frame.payload_size == 8) && ((uint8_t *)received_frame.payload)[7] == TAIL_BYTE_START_OF_TRANSFER) {
 		} else {
@@ -181,8 +307,58 @@ void TattuCan::Run()
 	}
 }
 
+
+int16_t TattuCan::can_read(CanFrame *received_frame)
+{
+	if ((_sk < 0) || (received_frame == nullptr)) {
+		PX4_INFO("sk < 0");
+		return -1;
+	}
+
+	int32_t result = recvmsg(_sk, &_recv_msg, MSG_DONTWAIT);
+
+	if (result < 0) {
+		// PX4_INFO("Read result %ld :: %d", result, get_errno());
+		return -1;
+	}
+
+	/* Copy CAN frame to CanardFrame */
+
+	if (can_fd) {
+		struct canfd_frame *recv_frame = (struct canfd_frame *)&_recv_frame;
+		received_frame->extended_can_id = recv_frame->can_id & CAN_EFF_MASK;
+		received_frame->payload_size = recv_frame->len;
+		memcpy((void *)received_frame->payload,recv_frame->data,recv_frame->len);
+		// received_frame->payload = &recv_frame->data;
+
+	} else {
+		struct can_frame *recv_frame = (struct can_frame *)&_recv_frame;
+		received_frame->extended_can_id = recv_frame->can_id & CAN_EFF_MASK;
+		received_frame->payload_size = recv_frame->can_dlc;
+		memcpy((void *)received_frame->payload,recv_frame->data,recv_frame->can_dlc);
+		received_frame->payload = &recv_frame->data; //FIXME either copy or clearly state the pointer reference
+	}
+
+	return result;
+	// nbytes = read(_sk, &frame, sizeof(struct can_frame));
+	// UNUSED(nbytes);
+	// memcpy((void *)received_frame->payload,frame.data,frame.can_dlc);
+	// received_frame->extended_can_id = frame.can_id;
+	// received_frame->payload_size = frame.can_dlc;
+
+	// if(nbytes > 0){
+	// 	mavlink_log_info(&_mavlink_log_pub, "[TUC] Read %d bytes", nbytes);
+	// }
+
+	// return frame.can_dlc;
+}
+
+
 int16_t TattuCan::receive(CanFrame *received_frame)
 {
+	#if USE_SOCK_CAN
+	return can_read(received_frame);
+	#else
 	if ((_fd < 0) || (received_frame == nullptr)) {
 		PX4_INFO("fd < 0");
 		return -1;
@@ -217,6 +393,7 @@ int16_t TattuCan::receive(CanFrame *received_frame)
 	}
 
 	return 0;
+	#endif
 }
 
 int TattuCan::start()

@@ -30,10 +30,24 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 ############################################################################
+
+set(SOCKETCAN_DIR ${PX4_SOURCE_DIR}/platforms/nuttx/Nuttx/nuttx)
+
 px4_add_module(
 	MODULE drivers__tattu_can
 	MAIN tattu_can
-	COMPILE_FLAGS
+	COMPILE_FLAGS -L${SOCKETCAN_DIR}/drivers -L${SOCKETCAN_DIR}/net -ldrivers -lnet
+	INCLUDES
+		${SOCKETCAN_DIR}/include/nuttx/can
+		${SOCKETCAN_DIR}/include/nuttx
+		${SOCKETCAN_DIR}/include
+		${SOCKETCAN_DIR}/net/can
+		${SOCKETCAN_DIR}/net
 	SRCS
 		TattuCan.cpp
+	# DEPENDS git_nuttx git_nuttx_apps
+	DEPENDS
+		git_nuttx
+		# nuttx_arch
+		# nuttx_drivers
 	)

@@ -75,7 +75,9 @@ uint16_t board_get_can_interfaces(void)
 #include "stm32_can.h"
 #include "board_config.h"
 
-#ifdef CONFIG_CAN
+// Bypass the init of this for now, should likely be in
+// Nuttx anyway at some low-level hook
+#if defined(CONFIG_CAN) && defined(CONFIG_STM32F7_CAN_CHARDRIVER)
 
 /************************************************************************************
  * Pre-processor Definitions

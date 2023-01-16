@@ -290,7 +290,7 @@ private:
 
 	int _sk{-1};
 	int _fd{-1};
-	bool can_fd{false};
+	bool can_fd{true};
 	bool _initialized{false};
 	bool _test_mode{false};
 

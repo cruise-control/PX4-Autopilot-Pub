@@ -336,7 +336,7 @@ int16_t TattuCan::can_read(CanFrame *received_frame)
 		received_frame->extended_can_id = recv_frame->can_id & CAN_EFF_MASK;
 		received_frame->payload_size = recv_frame->can_dlc;
 		memcpy((void *)received_frame->payload,recv_frame->data,recv_frame->can_dlc);
-		received_frame->payload = &recv_frame->data; //FIXME either copy or clearly state the pointer reference
+		// received_frame->payload = &recv_frame->data; //FIXME either copy or clearly state the pointer reference
 	}
 
 	return result;

@@ -150,22 +150,22 @@ int TattuCan::init_socket()
 	ifr.ifr_flags |= IFF_UP;
 	ioctl(_sk, SIOCSIFFLAGS, &ifr);
 
-	// setsockopt(_sk, SOL_CAN_RAW, CAN_RAW_FILTER, NULL, 0);
+	{
+		struct can_filter rfilter[1];
+		rfilter[0].can_id   = 0x1091;	// Data Type ID
+		rfilter[0].can_mask = 0xFFFF;
 
-	// if (bind(_sk, (struct sockaddr *)&addr, sizeof(struct sockaddr)) < 0) {
-	// 	PX4_ERR("bind error\n");
-	// 	return -1;
-	// }
+		if (setsockopt(_sk, SOL_CAN_RAW, CAN_RAW_FILTER, rfilter, sizeof(rfilter)) < 0) {
+			PX4_ERR("CAN Filtering Error %d", get_errno());
+		}
+	}
+
 
 	/* CAN interface ready to be used */
 
 	PX4_INFO("CAN socket open\n");
 
-	// struct can_filter rfilter[1];
-	// rfilter[0].can_id   = 0x1092;	// Data Type ID
-	// rfilter[0].can_mask = 0xFFFF;
 
-	// setsockopt(_sk, SOL_CAN_RAW, CAN_RAW_FILTER, rfilter, sizeof(rfilter));
 
 	// Setup RX msg
 	_recv_iov.iov_base = &_recv_frame;
@@ -192,14 +192,14 @@ int TattuCan::init_socket()
 
 void TattuCan::Run()
 {
-	// static hrt_abstime timer;
+	static hrt_abstime timer;
 	if (should_exit()) {
 		exit_and_cleanup();
 		return;
 	}
 
 	if (!_initialized) {
-		// timer = hrt_absolute_time();
+		timer = hrt_absolute_time();
 
 #if USE_SOCK_CAN
 
@@ -246,12 +246,11 @@ void TattuCan::Run()
 	}
 
 	while (receive(&received_frame) > 0) {
-		// if(hrt_elapsed_time(&timer) > 1*1E6)
-		// {
-		// 	PX4_INFO("Got %d bytes from can",received_frame.payload_size);
-		// 	timer = hrt_absolute_time();
-		// 	UNUSED(timer);
-		// }
+		if(hrt_elapsed_time(&timer) > 1*1E6)
+		{
+			PX4_INFO("Got %d bytes from can, ID of %lX",received_frame.payload_size, received_frame.extended_can_id);
+			timer = hrt_absolute_time();
+		}
 		// Find the start of a transferr
 		if ((received_frame.payload_size == 8) && ((uint8_t *)received_frame.payload)[7] == TAIL_BYTE_START_OF_TRANSFER) {
 		} else {
@@ -261,7 +260,7 @@ void TattuCan::Run()
 		// We have the start of a transfer
 		size_t offset = 5;
 		memcpy(&tattu_message, &(((uint8_t *)received_frame.payload)[2]), offset);
-
+		int payloads = 6;
 		while (receive(&received_frame) > 0) {
 
 			size_t payload_size = received_frame.payload_size - 1;
@@ -269,7 +268,13 @@ void TattuCan::Run()
 			// TODO: AND look for TAIL_BYTE_START_OF_TRANSFER to indicate end of transfer. Untested...
 			memcpy(((char *)&tattu_message) + offset, received_frame.payload, payload_size);
 			offset += payload_size;
+			payloads--;
+			if(payloads <= 0){
+				break;
+			}
 		}
+
+		PX4_INFO("Finished getting message data");
 
 		battery_status_s battery_status = {};
 		battery_status.timestamp = hrt_absolute_time();
@@ -315,10 +320,18 @@ int16_t TattuCan::can_read(CanFrame *received_frame)
 		return -1;
 	}
 
-	int32_t result = recvmsg(_sk, &_recv_msg, MSG_DONTWAIT);
+	// In the current implementation, you MUST use MSG_WAITALL to get the filter to work,
+	// otherwise, the codepath is to get the next message in the queue (or none) and all filtering
+	// gets bypassed. This may or may not happen using select.
+	// This seems inconsistent and less than ideal for any application, especially as stopping it will
+	// not exit cleanly...
+	// MSG_WAITALL is giving unexpected results
+	int32_t result = recvmsg(_sk, &_recv_msg, MSG_WAITALL/*MSG_DONTWAIT*/);
+
+
 
 	if (result < 0) {
-		// PX4_INFO("Read result %ld :: %d", result, get_errno());
+		PX4_INFO("Read result %ld :: %d", result, get_errno());
 		return -1;
 	}
 
@@ -330,6 +343,12 @@ int16_t TattuCan::can_read(CanFrame *received_frame)
 		received_frame->payload_size = recv_frame->len;
 		memcpy((void *)received_frame->payload,recv_frame->data,recv_frame->len);
 		// received_frame->payload = &recv_frame->data;
+
+		PX4_INFO("Read result %ld ID %lX bytes %d", result, recv_frame->can_id & CAN_EFF_MASK, recv_frame->len);
+		for( int i=0;i<recv_frame->len;i++){
+			printf("%X ",recv_frame->data[i]);
+		}
+		printf("\n");
 
 	} else {
 		struct can_frame *recv_frame = (struct can_frame *)&_recv_frame;

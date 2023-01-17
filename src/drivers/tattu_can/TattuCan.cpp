@@ -55,29 +55,8 @@
 #include <nuttx/can.h>
 #include <netpacket/can.h>
 
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <stdint.h>
-// #include <inttypes.h>
-// #include <unistd.h>
-// #include <string.h>
-// #include <signal.h>
-// #include <ctype.h>
-// #include <libgen.h>
-// #include <time.h>
-// #include <errno.h>
-// #include "../../../platforms/nuttx/NuttX/nuttx/include/nuttx/can.h"
 
-// #include <sys/time.h>
-// #include <sys/types.h>
-// #include <sys/socket.h>
-// #include <sys/ioctl.h>
-// #include <sys/uio.h>
-// #include <net/if.h>
-
-
-
-// extern orb_advert_t mavlink_log_pub;
+#define USE_SOCK_CAN 1
 
 orb_advert_t _mavlink_log_pub = nullptr;
 
@@ -201,7 +180,6 @@ int TattuCan::init_socket()
 	return 0;
 
 }
-#define USE_SOCK_CAN 1
 
 void TattuCan::Run()
 {
@@ -214,18 +192,7 @@ void TattuCan::Run()
 	if (!_initialized) {
 		timer = hrt_absolute_time();
 
-#if USE_SOCK_CAN
-
 		init_socket();
-#else
-		_fd = ::open("/dev/can0", O_RDWR);
-
-		if (_fd < 0) {
-			PX4_INFO("FAILED TO OPEN /dev/can0");
-			return;
-		}
-#endif
-
 
 		mavlink_log_info(&_mavlink_log_pub, "[TUC] Initialized");
 
@@ -258,36 +225,53 @@ void TattuCan::Run()
 		return;
 	}
 
+	// This is a very crude driver and should be modified to read all data, buffer it and attempt to extract
+	// meaningful information from the buffer. For now it will be sufficient to get data from the battery
+	// although it won't be reliable and may drop frames
 	while (receive(&received_frame) > 0) {
 		if(hrt_elapsed_time(&timer) > 1*1E6)
 		{
 			// PX4_INFO("Got %d bytes from can, ID of %lX",received_frame.payload_size, received_frame.extended_can_id);
 			timer = hrt_absolute_time();
 		}
-		// Find the start of a transferr
+		// Find the start of a transfer
 		if ((received_frame.payload_size == 8) && ((uint8_t *)received_frame.payload)[7] == TAIL_BYTE_START_OF_TRANSFER) {
 		} else {
 			continue;
 		}
 
 		// We have the start of a transfer
+		// First two bytes are the CRC for the message.
+		// TODO Extract the CRC and verify that the message is correct
 		size_t offset = 5;
 		memcpy(&tattu_message, &(((uint8_t *)received_frame.payload)[2]), offset);
-		int payloads = 6;
-		while (receive(&received_frame) > 0) {
 
+		uint8_t transfer_id = 0x00;
+
+		while (receive(&received_frame) > 0) {
+			// Extract the payload
+			// Last byte is the tail and is not part of the data packet
 			size_t payload_size = received_frame.payload_size - 1;
-			// TODO: add check to prevent buffer overflow from a corrupt 'payload_size' value
-			// TODO: AND look for TAIL_BYTE_START_OF_TRANSFER to indicate end of transfer. Untested...
+
 			memcpy(((char *)&tattu_message) + offset, received_frame.payload, payload_size);
 			offset += payload_size;
-			payloads--;
-			if(payloads <= 0){
+
+			// Extract the tail byte
+			uint8_t tail = ((uint8_t*)received_frame.payload)[7];
+
+			if(tail & TAIL_BYTE_END_OF_TRANSFER) {
 				break;
 			}
+
+			transfer_id = tail & 0x1f;
+		}
+		// For the 12s, there should be no more than 7 packets
+		if(transfer_id > 7)
+		{
+			break;
 		}
 
-		PX4_INFO("Finished getting message data");
+		PX4_INFO("Got tattu_can message");
 
 		battery_status_s battery_status = {};
 		battery_status.timestamp = hrt_absolute_time();
@@ -321,7 +305,6 @@ void TattuCan::Run()
 		battery_status.voltage_cell_v[11] = static_cast<float>(tattu_message.cell_12_voltage) / 1000.0f;
 
 		_battery_status_pub.publish(battery_status);
-		mavlink_log_info(&_mavlink_log_pub, "[TUC] Published message");
 	}
 }
 
@@ -341,7 +324,7 @@ int16_t TattuCan::can_read(CanFrame *received_frame)
 	// not exit cleanly...
 	// MSG_WAITALL is giving unexpected results
 	printf(".");
-	int32_t result = recvmsg(_sk, &_recv_msg, /*MSG_WAITALL*/MSG_DONTWAIT);
+	int32_t result = recvmsg(_sk, &_recv_msg, MSG_DONTWAIT);
 
 
 	if (result < 0) {
@@ -356,7 +339,7 @@ int16_t TattuCan::can_read(CanFrame *received_frame)
 		struct canfd_frame *recv_frame = (struct canfd_frame *)&_recv_frame;
 
 		// Filter (ignore) any messages not from our intended packet
-		if ((recv_frame->can_id & CAN_EFF_MASK) != _tattu_id){
+		if ((recv_frame->can_id & CAN_EFF_MASK) != TATTU_CAN_ID){
 			printf("x");
 			return -1;
 		}
@@ -368,7 +351,7 @@ int16_t TattuCan::can_read(CanFrame *received_frame)
 		struct can_frame *recv_frame = (struct can_frame *)&_recv_frame;
 
 		// Filter (ignore) any messages not from our intended packet
-		if ((recv_frame->can_id & CAN_EFF_MASK) != _tattu_id){
+		if ((recv_frame->can_id & CAN_EFF_MASK) != TATTU_CAN_ID){
 			printf("x");
 			return -1;
 		}

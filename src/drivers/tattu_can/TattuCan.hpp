@@ -283,6 +283,8 @@ public:
 private:
 	static constexpr uint32_t SAMPLE_RATE{20}; // samples per second
 	static constexpr size_t TAIL_BYTE_START_OF_TRANSFER{128};
+	static constexpr size_t TAIL_BYTE_END_OF_TRANSFER{0x40};
+	static constexpr uint32_t TATTU_CAN_ID {0x1092};
 
 	void Run() override;
 	int init_socket();
@@ -299,7 +301,6 @@ private:
 	struct msghdr      _recv_msg {};
 	struct cmsghdr     *_recv_cmsg {};
 	uint8_t            _recv_control[sizeof(struct cmsghdr) + sizeof(struct timeval)] {};
-	uint32_t 	   _tattu_id {0x1091};
 
 	uORB::PublicationMulti<battery_status_s> _battery_status_pub{ORB_ID(battery_status)};
 };

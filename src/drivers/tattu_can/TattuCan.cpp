@@ -160,6 +160,16 @@ int TattuCan::init_socket()
 		}
 	}
 
+	// Set the receive buffer size - doesn't work
+	// {
+	// 	int rcvbuf_size = CONFIG_NET_RECV_BUFSIZE;
+	// 	if (setsockopt(_sk, SOL_SOCKET, SO_RCVBUF,
+	// 			&rcvbuf_size, sizeof(rcvbuf_size)) < 0) {
+	// 		PX4_ERR("setsockopt SO_RCVBUF %d", get_errno());
+	// 		return 1;
+	// 	}
+	// }
+
 
 	/* CAN interface ready to be used */
 
@@ -320,20 +330,38 @@ int16_t TattuCan::can_read(CanFrame *received_frame)
 		return -1;
 	}
 
+	#ifdef POLL_READ
+
+	          FD_ZERO(&rdfs);
+          FD_SET(s, &rdfs);  /* CAN Socket */
+          FD_SET(fd, &rdfs); /* UART */
+
+          if ((ret = select(s + 1, &rdfs, NULL, NULL, NULL)) <= 0)
+            {
+              continue;
+            }
+
+          if (FD_ISSET(s, &rdfs))
+            {
+
+	    }
+
+	#else
+
 	// In the current implementation, you MUST use MSG_WAITALL to get the filter to work,
 	// otherwise, the codepath is to get the next message in the queue (or none) and all filtering
 	// gets bypassed. This may or may not happen using select.
 	// This seems inconsistent and less than ideal for any application, especially as stopping it will
 	// not exit cleanly...
 	// MSG_WAITALL is giving unexpected results
-	int32_t result = recvmsg(_sk, &_recv_msg, MSG_WAITALL/*MSG_DONTWAIT*/);
+	int32_t result = recvmsg(_sk, &_recv_msg, /*MSG_WAITALL*/MSG_DONTWAIT);
 
 
 
-	if (result < 0) {
-		PX4_INFO("Read result %ld :: %d", result, get_errno());
-		return -1;
-	}
+	// if (result < 0) {
+	// 	PX4_INFO("Read result %ld :: %d", result, get_errno());
+	// 	return -1;
+	// }
 
 	/* Copy CAN frame to CanardFrame */
 
@@ -359,17 +387,7 @@ int16_t TattuCan::can_read(CanFrame *received_frame)
 	}
 
 	return result;
-	// nbytes = read(_sk, &frame, sizeof(struct can_frame));
-	// UNUSED(nbytes);
-	// memcpy((void *)received_frame->payload,frame.data,frame.can_dlc);
-	// received_frame->extended_can_id = frame.can_id;
-	// received_frame->payload_size = frame.can_dlc;
-
-	// if(nbytes > 0){
-	// 	mavlink_log_info(&_mavlink_log_pub, "[TUC] Read %d bytes", nbytes);
-	// }
-
-	// return frame.can_dlc;
+	#endif
 }
 
 

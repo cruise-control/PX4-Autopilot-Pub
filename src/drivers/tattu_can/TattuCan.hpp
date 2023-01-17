@@ -299,6 +299,7 @@ private:
 	struct msghdr      _recv_msg {};
 	struct cmsghdr     *_recv_cmsg {};
 	uint8_t            _recv_control[sizeof(struct cmsghdr) + sizeof(struct timeval)] {};
+	uint32_t 	   _tattu_id {0x1091};
 
 	uORB::PublicationMulti<battery_status_s> _battery_status_pub{ORB_ID(battery_status)};
 };

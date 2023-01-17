@@ -89,11 +89,14 @@ TattuCan::TattuCan() :
 TattuCan::~TattuCan()
 {
 
-	if (_fd < 0) {
-		return;
+	if (_fd >= 0) {
+		::close(_fd);
 	}
 
-	::close(_fd);
+
+	if (_sk >= 0) {
+		::close(_sk);
+	}
 
 	_initialized = false;
 }
@@ -258,7 +261,7 @@ void TattuCan::Run()
 	while (receive(&received_frame) > 0) {
 		if(hrt_elapsed_time(&timer) > 1*1E6)
 		{
-			PX4_INFO("Got %d bytes from can, ID of %lX",received_frame.payload_size, received_frame.extended_can_id);
+			// PX4_INFO("Got %d bytes from can, ID of %lX",received_frame.payload_size, received_frame.extended_can_id);
 			timer = hrt_absolute_time();
 		}
 		// Find the start of a transferr
@@ -348,6 +351,46 @@ int16_t TattuCan::can_read(CanFrame *received_frame)
 
 	#else
 
+	#if 0
+	uint8_t buf[64+8];
+
+	// struct sockaddr_in _receiver_outaddr;
+	static socklen_t addrlen = (socklen_t)0;
+	int32_t result = recvfrom(_sk, buf, 72, MSG_DONTWAIT, NULL, &addrlen);
+	for( int i=0;i<result;i++){
+		printf("%X ",buf[i]);
+	}
+	printf("\n");
+	return -1;
+	#elif 1
+		// fd_set rdfs;
+		// FD_ZERO(&rdfs);
+		// FD_SET(_sk, &rdfs);  /* CAN Socket */
+		// struct timeval timeout{0};
+		// // timeout.tv_sec = 1;
+		printf(".");
+		fflush(stdout);
+		// if ((select(_sk+1, &rdfs, NULL, NULL, &timeout)) <= 0)
+		// {
+		// 	printf("x");
+		// 	return -1;
+		// }
+		// printf("-");
+		// fflush(stdout);
+		// if (!FD_ISSET(_sk, &rdfs))
+		// {
+		// 	printf("+");
+		// 	PX4_INFO("Nothing to read");
+		// 	return -1;
+		// }
+		// printf("!");
+		// fflush(stdout);
+		// Data is now available
+		// read with the filter
+		int32_t result = recvmsg(_sk, &_recv_msg, MSG_WAIT_SEC);
+
+	#else
+
 	// In the current implementation, you MUST use MSG_WAITALL to get the filter to work,
 	// otherwise, the codepath is to get the next message in the queue (or none) and all filtering
 	// gets bypassed. This may or may not happen using select.
@@ -356,15 +399,16 @@ int16_t TattuCan::can_read(CanFrame *received_frame)
 	// MSG_WAITALL is giving unexpected results
 	int32_t result = recvmsg(_sk, &_recv_msg, /*MSG_WAITALL*/MSG_DONTWAIT);
 
+	#endif
 
-
-	// if (result < 0) {
-	// 	PX4_INFO("Read result %ld :: %d", result, get_errno());
-	// 	return -1;
-	// }
+	if (result < 0) {
+		printf("x");
+		// PX4_INFO("Read result %ld :: %d", result, get_errno());
+		return -1;
+	}
 
 	/* Copy CAN frame to CanardFrame */
-
+	printf("!");
 	if (can_fd) {
 		struct canfd_frame *recv_frame = (struct canfd_frame *)&_recv_frame;
 		received_frame->extended_can_id = recv_frame->can_id & CAN_EFF_MASK;
@@ -373,10 +417,11 @@ int16_t TattuCan::can_read(CanFrame *received_frame)
 		// received_frame->payload = &recv_frame->data;
 
 		PX4_INFO("Read result %ld ID %lX bytes %d", result, recv_frame->can_id & CAN_EFF_MASK, recv_frame->len);
-		for( int i=0;i<recv_frame->len;i++){
-			printf("%X ",recv_frame->data[i]);
-		}
-		printf("\n");
+		printf("%X\n",recv_frame->data[0]);
+		// for( int i=0;i<recv_frame->len;i++){
+		// 	printf("%X ",recv_frame->data[i]);
+		// }
+		// printf("\n");
 
 	} else {
 		struct can_frame *recv_frame = (struct can_frame *)&_recv_frame;

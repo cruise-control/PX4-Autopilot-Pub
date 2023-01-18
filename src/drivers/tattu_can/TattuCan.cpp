@@ -82,8 +82,6 @@ TattuCan::~TattuCan()
 
 int TattuCan::init_socket()
 {
-	const char *const can_iface_name = "can1";
-
 	struct ifreq ifr;
 	struct sockaddr_can addr;
 
@@ -93,7 +91,7 @@ int TattuCan::init_socket()
 		return -1;
 	}
 
-	strncpy(ifr.ifr_name, can_iface_name, IFNAMSIZ - 1);
+	strncpy(ifr.ifr_name, CAN_PORT, IFNAMSIZ - 1);
 	ifr.ifr_name[IFNAMSIZ - 1] = '\0';
 	ifr.ifr_ifindex = if_nametoindex(ifr.ifr_name);
 
@@ -109,12 +107,6 @@ int TattuCan::init_socket()
 	addr.can_ifindex = ifr.ifr_ifindex;
 
 	const int on = 1;
-	/* RX Timestamping */
-
-	// if (setsockopt(_sk, SOL_SOCKET, SO_TIMESTAMP, &on, sizeof(on)) < 0) {
-	// 	PX4_INFO("SO_TIMESTAMP is disabled %d", get_errno());
-	// 	// return -1;
-	// }
 
 	if (can_fd) {
 		if (setsockopt(_sk, SOL_CAN_RAW, CAN_RAW_FD_FRAMES, &on, sizeof(on)) < 0) {
@@ -142,22 +134,10 @@ int TattuCan::init_socket()
 		}
 	}
 
-	// Set the receive buffer size - doesn't work
-	// {
-	// 	int rcvbuf_size = CONFIG_NET_RECV_BUFSIZE;
-	// 	if (setsockopt(_sk, SOL_SOCKET, SO_RCVBUF,
-	// 			&rcvbuf_size, sizeof(rcvbuf_size)) < 0) {
-	// 		PX4_ERR("setsockopt SO_RCVBUF %d", get_errno());
-	// 		return 1;
-	// 	}
-	// }
-
 
 	/* CAN interface ready to be used */
 
 	PX4_INFO("CAN socket open\n");
-
-
 
 	// Setup RX msg
 	_recv_iov.iov_base = &_recv_frame;

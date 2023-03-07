@@ -33,12 +33,26 @@
 
 #pragma once
 
+
+
+/****************************************************************************
+ * Included Files
+ ****************************************************************************/
+
+#ifdef CONFIG_CAN_TXREADY
+#  include <nuttx/wqueue.h>
+#endif
+
+#include <queue.h>
+
 #include <nuttx/can/can.h>
+#include <nuttx/can.h>
+#include <sys/time.h>
 
 #include <px4_platform_common/module.h>
 #include <px4_platform_common/px4_work_queue/ScheduledWorkItem.hpp>
 
-#include <uORB/Publication.hpp>
+#include <uORB/PublicationMulti.hpp>
 #include <uORB/topics/battery_status.h>
 
 using namespace time_literals;
@@ -93,14 +107,40 @@ public:
 
 	int16_t receive(CanFrame *received_frame);
 
+	void set_test_mode(bool mode);
+	bool get_test_mode();
+
+	/**
+	 * Diagnostics - print some basic information about the driver.
+	 */
+	int print_status() override;
+
 private:
-	static constexpr uint32_t SAMPLE_RATE{100}; // samples per second (10ms)
+	static constexpr uint32_t SAMPLE_RATE{20}; // samples per second
 	static constexpr size_t TAIL_BYTE_START_OF_TRANSFER{128};
+	static constexpr size_t TAIL_BYTE_END_OF_TRANSFER{0x40};
+	static constexpr uint32_t TATTU_CAN_ID {0x1092};
+	static constexpr const char* CAN_PORT {"can0"};
 
 	void Run() override;
+	int init_socket();
+	int16_t can_read(CanFrame *received_frame);
 
+	int _sk{-1};
 	int _fd{-1};
+	bool can_fd{true};
 	bool _initialized{false};
+	bool _test_mode{false};
 
-	uORB::Publication<battery_status_s> _battery_status_pub{ORB_ID::battery_status};
+	struct iovec       _recv_iov {};
+	struct canfd_frame _recv_frame {};
+	struct msghdr      _recv_msg {};
+	struct cmsghdr     *_recv_cmsg {};
+	uint8_t            _recv_control[sizeof(struct cmsghdr) + sizeof(struct timeval)] {};
+
+	uORB::PublicationMulti<battery_status_s> _battery_status_pub{ORB_ID(battery_status)};
 };
+
+
+
+

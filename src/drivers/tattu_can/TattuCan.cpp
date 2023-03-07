@@ -45,8 +45,28 @@
  */
 
 #include "TattuCan.hpp"
+#include "stm32_can.h"
+#include <systemlib/mavlink_log.h>
+#include <net/if.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <nuttx/can.h>
+#include <netpacket/can.h>
 
-extern orb_advert_t mavlink_log_pub;
+// #define DEBUG_RX_TRACE
+#define USE_SOCK_CAN 1
+
+orb_advert_t _mavlink_log_pub = nullptr;
+
+void debug_print(const char* str){
+#ifdef DEBUG_RX_TRACE
+	printf("%s",str);
+#else
+	UNUSED(str);
+#endif
+}
 
 TattuCan::TattuCan() :
 	ScheduledWorkItem(MODULE_NAME, px4::wq_configurations::uavcan)
@@ -55,23 +75,114 @@ TattuCan::TattuCan() :
 
 TattuCan::~TattuCan()
 {
+
+	if (_fd >= 0) {
+		::close(_fd);
+	}
+
+
+	if (_sk >= 0) {
+		::close(_sk);
+	}
+
+	_initialized = false;
+}
+
+int TattuCan::init_socket()
+{
+	struct ifreq ifr;
+	struct sockaddr_can addr;
+
+	PX4_INFO("tattu can bus\n");
+	if ((_sk = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
+		PX4_ERR("Error opening CAN socket\n");
+		return -1;
+	}
+
+	strncpy(ifr.ifr_name, CAN_PORT, IFNAMSIZ - 1);
+	ifr.ifr_name[IFNAMSIZ - 1] = '\0';
+	ifr.ifr_ifindex = if_nametoindex(ifr.ifr_name);
+
+	if (!ifr.ifr_ifindex) {
+		mavlink_log_info(&_mavlink_log_pub, "Failed to find %s device", ifr.ifr_name);
+		return -1;
+	}
+
+	mavlink_log_info(&_mavlink_log_pub, "CAN Index found %d", ifr.ifr_ifindex);
+
+	memset(&addr, 0, sizeof(struct sockaddr));
+	addr.can_family  = AF_CAN;
+	addr.can_ifindex = ifr.ifr_ifindex;
+
+	const int on = 1;
+
+	if (can_fd) {
+		if (setsockopt(_sk, SOL_CAN_RAW, CAN_RAW_FD_FRAMES, &on, sizeof(on)) < 0) {
+			PX4_ERR("no CAN FD support %d", get_errno());
+			return -1;
+		}
+	}
+
+	if (bind(_sk, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+		PX4_ERR("bind error number %d", get_errno());
+		return -1;
+	}
+
+	// Bring up the interface as it will be down initially (and won't auto-come up)
+	ifr.ifr_flags |= IFF_UP;
+	ioctl(_sk, SIOCSIFFLAGS, &ifr);
+
+	{
+		struct can_filter rfilter[1];
+		rfilter[0].can_id   = 0x1091;	// Data Type ID
+		rfilter[0].can_mask = 0xFFFF;
+
+		if (setsockopt(_sk, SOL_CAN_RAW, CAN_RAW_FILTER, rfilter, sizeof(rfilter)) < 0) {
+			PX4_ERR("CAN Filtering Error %d", get_errno());
+		}
+	}
+
+
+	/* CAN interface ready to be used */
+
+	PX4_INFO("CAN socket open\n");
+
+	// Setup RX msg
+	_recv_iov.iov_base = &_recv_frame;
+
+	if (can_fd) {
+		_recv_iov.iov_len = sizeof(struct canfd_frame);
+
+	} else {
+		_recv_iov.iov_len = sizeof(struct can_frame);
+	}
+
+	memset(_recv_control, 0x00, sizeof(_recv_control));
+
+	_recv_msg.msg_iov = &_recv_iov;
+	_recv_msg.msg_iovlen = 1;
+	_recv_msg.msg_control = &_recv_control;
+	_recv_msg.msg_controllen = sizeof(_recv_control);
+	_recv_cmsg = CMSG_FIRSTHDR(&_recv_msg);
+
+	return 0;
+
 }
 
 void TattuCan::Run()
 {
+	static hrt_abstime timer;
 	if (should_exit()) {
 		exit_and_cleanup();
 		return;
 	}
 
 	if (!_initialized) {
+		timer = hrt_absolute_time();
 
-		_fd = ::open("/dev/can0", O_RDWR);
+		init_socket();
 
-		if (_fd < 0) {
-			PX4_INFO("FAILED TO OPEN /dev/can0");
-			return;
-		}
+		mavlink_log_info(&_mavlink_log_pub, "[TUC] Initialized");
 
 		_initialized = true;
 	}
@@ -82,33 +193,80 @@ void TattuCan::Run()
 
 	Tattu12SBatteryMessage tattu_message = {};
 
-	while (receive(&received_frame) > 0) {
+	if (_test_mode) {
+		static uint16_t count = 0;
+		count++;
+		battery_status_s battery_status = {};
+		battery_status.timestamp = hrt_absolute_time();
+		battery_status.connected = true;
+		battery_status.cell_count = 12;
+		battery_status.id = 111;
+		battery_status.cycle_count = count;
+		battery_status.voltage_cell_v[0] = -1.0;
+		battery_status.voltage_v = -1.1;
+		battery_status.current_a = 5.0;
+		battery_status.full_charge_capacity_wh = 100.0;
+		battery_status.remaining_capacity_wh = battery_status.full_charge_capacity_wh * .95f;
+		battery_status.temperature = 30;
 
-		// Find the start of a transferr
+		_battery_status_pub.publish(battery_status);
+		return;
+	}
+
+	// This is a very crude driver and should be modified to read all data, buffer it and attempt to extract
+	// meaningful information from the buffer. For now it will be sufficient to get data from the battery
+	// although it won't be reliable and may drop frames
+	while (receive(&received_frame) > 0) {
+		if(hrt_elapsed_time(&timer) > 1*1E6)
+		{
+			// PX4_INFO("Got %d bytes from can, ID of %lX",received_frame.payload_size, received_frame.extended_can_id);
+			timer = hrt_absolute_time();
+		}
+		// Find the start of a transfer
 		if ((received_frame.payload_size == 8) && ((uint8_t *)received_frame.payload)[7] == TAIL_BYTE_START_OF_TRANSFER) {
 		} else {
 			continue;
 		}
 
 		// We have the start of a transfer
+		// First two bytes are the CRC for the message.
+		// TODO Extract the CRC and verify that the message is correct
 		size_t offset = 5;
 		memcpy(&tattu_message, &(((uint8_t *)received_frame.payload)[2]), offset);
 
-		while (receive(&received_frame) > 0) {
+		uint8_t transfer_id = 0x00;
 
+		while (receive(&received_frame) > 0) {
+			// Extract the payload
+			// Last byte is the tail and is not part of the data packet
 			size_t payload_size = received_frame.payload_size - 1;
-			// TODO: add check to prevent buffer overflow from a corrupt 'payload_size' value
-			// TODO: AND look for TAIL_BYTE_START_OF_TRANSFER to indicate end of transfer. Untested...
+
 			memcpy(((char *)&tattu_message) + offset, received_frame.payload, payload_size);
 			offset += payload_size;
+
+			// Extract the tail byte
+			uint8_t tail = ((uint8_t*)received_frame.payload)[7];
+
+			if(tail & TAIL_BYTE_END_OF_TRANSFER) {
+				break;
+			}
+
+			transfer_id = tail & 0x1f;
 		}
+		// For the 12s, there should be no more than 7 packets
+		if(transfer_id > 7)
+		{
+			break;
+		}
+
+		PX4_INFO("Got tattu_can message");
 
 		battery_status_s battery_status = {};
 		battery_status.timestamp = hrt_absolute_time();
 		battery_status.connected = true;
 		battery_status.cell_count = 12;
 
-		sprintf(battery_status.serial_number, "%d", tattu_message.manufacturer);
+		// sprintf(battery_status.serial_number, "%d", tattu_message.manufacturer);
 		battery_status.id = static_cast<uint8_t>(tattu_message.sku);
 
 		battery_status.cycle_count = tattu_message.cycle_life;
@@ -138,8 +296,68 @@ void TattuCan::Run()
 	}
 }
 
+int16_t TattuCan::can_read(CanFrame *received_frame)
+{
+	if ((_sk < 0) || (received_frame == nullptr)) {
+		PX4_INFO("sk < 0");
+		return -1;
+	}
+
+
+	// In the current implementation, you MUST use MSG_WAITALL to get the filter to work,
+	// otherwise, the codepath is to get the next message in the queue (or none) and all filtering
+	// gets bypassed. This may or may not happen using select.
+	// This seems inconsistent and less than ideal for any application, especially as stopping it will
+	// not exit cleanly...
+	// MSG_WAITALL is giving unexpected results
+	debug_print(".");
+	int32_t result = recvmsg(_sk, &_recv_msg, MSG_DONTWAIT);
+
+
+	if (result < 0) {
+		debug_print("x");
+		// PX4_INFO("Read result %ld :: %d", result, get_errno());
+		return -1;
+	}
+
+	/* Copy CAN frame to CanardFrame */
+	debug_print("!");
+	if (can_fd) {
+		struct canfd_frame *recv_frame = (struct canfd_frame *)&_recv_frame;
+
+		// Filter (ignore) any messages not from our intended packet
+		if ((recv_frame->can_id & CAN_EFF_MASK) != TATTU_CAN_ID){
+			debug_print("x");
+			return -1;
+		}
+
+		received_frame->extended_can_id = recv_frame->can_id & CAN_EFF_MASK;
+		received_frame->payload_size = recv_frame->len;
+		memcpy((void *)received_frame->payload,recv_frame->data,recv_frame->len);
+	} else {
+		struct can_frame *recv_frame = (struct can_frame *)&_recv_frame;
+
+		// Filter (ignore) any messages not from our intended packet
+		if ((recv_frame->can_id & CAN_EFF_MASK) != TATTU_CAN_ID){
+			debug_print("x");
+			return -1;
+		}
+
+		received_frame->extended_can_id = recv_frame->can_id & CAN_EFF_MASK;
+		received_frame->payload_size = recv_frame->can_dlc;
+		memcpy((void *)received_frame->payload,recv_frame->data,recv_frame->can_dlc);
+	}
+
+	return result;
+
+}
+
+
 int16_t TattuCan::receive(CanFrame *received_frame)
 {
+	#if USE_SOCK_CAN
+	return can_read(received_frame);
+	#else
 	if ((_fd < 0) || (received_frame == nullptr)) {
 		PX4_INFO("fd < 0");
 		return -1;
@@ -174,6 +392,7 @@ int16_t TattuCan::receive(CanFrame *received_frame)
 	}
 
 	return 0;
+	#endif
 }
 
 int TattuCan::start()
@@ -183,6 +402,16 @@ int TattuCan::start()
 	uint32_t delay_us = 500000;
 	ScheduleOnInterval(1000000 / SAMPLE_RATE, delay_us);
 	return PX4_OK;
+}
+
+void TattuCan::set_test_mode(bool mode)
+{
+	_test_mode = mode;
+}
+
+bool TattuCan::get_test_mode()
+{
+	return _test_mode;
 }
 
 int TattuCan::task_spawn(int argc, char *argv[])
@@ -217,8 +446,16 @@ Driver for reading data from the Tattu 12S 16000mAh smart battery.
 	PRINT_MODULE_USAGE_NAME("tattu_can", "system");
 	PRINT_MODULE_USAGE_COMMAND("start");
 	PRINT_MODULE_USAGE_DEFAULT_COMMANDS();
+	PRINT_MODULE_USAGE_COMMAND_DESCR("test", "Generates and publishes dummy data");
 
 	return 0;
+}
+
+int TattuCan::print_status()
+{
+	PX4_INFO("Initialized %s", _initialized?"Yes":"No");
+	PX4_INFO("Test Mode %s", _test_mode?"On":"Off");
+	return PX4_OK;
 }
 
 int TattuCan::custom_command(int argc, char *argv[])
@@ -226,6 +463,19 @@ int TattuCan::custom_command(int argc, char *argv[])
 	if (!is_running()) {
 		PX4_INFO("not running");
 		return PX4_ERROR;
+	}
+
+	if(argc <= 0){
+		PX4_INFO("no command");
+		return PX4_ERROR;
+	}
+
+	if (strcmp(argv[0], "test") == 0) {
+		bool mode = get_instance()->get_test_mode();
+		mode = !mode;
+		mavlink_log_info(&_mavlink_log_pub, "Test Mode changed to %s",mode? "On":"Off");
+		get_instance()->set_test_mode(mode);
+		return PX4_OK;
 	}
 
 	return print_usage("Unrecognized command.");

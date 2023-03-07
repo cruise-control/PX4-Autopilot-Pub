@@ -55,10 +55,18 @@
 #include <nuttx/can.h>
 #include <netpacket/can.h>
 
-
+// #define DEBUG_RX_TRACE
 #define USE_SOCK_CAN 1
 
 orb_advert_t _mavlink_log_pub = nullptr;
+
+void debug_print(const char* str){
+#ifdef DEBUG_RX_TRACE
+	printf("%s",str);
+#else
+	UNUSED(str);
+#endif
+}
 
 TattuCan::TattuCan() :
 	ScheduledWorkItem(MODULE_NAME, px4::wq_configurations::uavcan)
@@ -288,7 +296,6 @@ void TattuCan::Run()
 	}
 }
 
-
 int16_t TattuCan::can_read(CanFrame *received_frame)
 {
 	if ((_sk < 0) || (received_frame == nullptr)) {
@@ -303,24 +310,24 @@ int16_t TattuCan::can_read(CanFrame *received_frame)
 	// This seems inconsistent and less than ideal for any application, especially as stopping it will
 	// not exit cleanly...
 	// MSG_WAITALL is giving unexpected results
-	printf(".");
+	debug_print(".");
 	int32_t result = recvmsg(_sk, &_recv_msg, MSG_DONTWAIT);
 
 
 	if (result < 0) {
-		printf("x");
+		debug_print("x");
 		// PX4_INFO("Read result %ld :: %d", result, get_errno());
 		return -1;
 	}
 
 	/* Copy CAN frame to CanardFrame */
-	printf("!");
+	debug_print("!");
 	if (can_fd) {
 		struct canfd_frame *recv_frame = (struct canfd_frame *)&_recv_frame;
 
 		// Filter (ignore) any messages not from our intended packet
 		if ((recv_frame->can_id & CAN_EFF_MASK) != TATTU_CAN_ID){
-			printf("x");
+			debug_print("x");
 			return -1;
 		}
 
@@ -332,7 +339,7 @@ int16_t TattuCan::can_read(CanFrame *received_frame)
 
 		// Filter (ignore) any messages not from our intended packet
 		if ((recv_frame->can_id & CAN_EFF_MASK) != TATTU_CAN_ID){
-			printf("x");
+			debug_print("x");
 			return -1;
 		}
 

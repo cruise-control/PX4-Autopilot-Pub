@@ -5,6 +5,6 @@
 
 rgbled_pwm start
 safety_button start
-# tattu_can start # Start the desired battery reader
 battery_status stop # Stop by default as it won't be hooked up and will publish garbage
 # uavcannode start # Kick this off so it is headless
+tattu_can start # Start the desired battery reader

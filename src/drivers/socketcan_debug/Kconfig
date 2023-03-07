@@ -1,0 +1,5 @@
+menuconfig DRIVERS_SOCKETCAN_DEBUG
+	bool "socket_can_debug"
+	default n
+	---help---
+		Enable support for socket_can_debug

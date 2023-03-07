@@ -94,6 +94,8 @@
 		GPIO_42688P_FSYNC,                \
 		GPIO_CAN1_TX,                     \
 		GPIO_CAN1_RX,                     \
+		GPIO_CAN2_TX,                     \
+		GPIO_CAN2_RX,                     \
 		GPIO_I2C1_SCL_RESET,              \
 		GPIO_I2C1_SDA_RESET,              \
 	}

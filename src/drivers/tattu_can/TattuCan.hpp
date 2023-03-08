@@ -128,7 +128,7 @@ private:
 
 	int _sk{-1};
 	int _fd{-1};
-	bool can_fd{true};
+	bool can_fd{false};
 	bool _initialized{false};
 	bool _test_mode{false};
 

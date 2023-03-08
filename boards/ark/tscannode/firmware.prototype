@@ -1,10 +1,10 @@
 {
     "board_id": 83,
     "magic": "PX4FWv1",
-    "description": "Firmware for the ARK CANnode board",
+    "description": "Firmware for the ARK TSCANnode board",
     "image": "",
     "build_time": 0,
-    "summary": "ARKCANNODE",
+    "summary": "ARKTSCANNODE",
     "version": "0.1",
     "image_size": 0,
     "image_maxsize": 2080768,

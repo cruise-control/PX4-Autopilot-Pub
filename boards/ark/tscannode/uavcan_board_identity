@@ -8,7 +8,7 @@ add_definitions(
 
 set(uavcanblid_hw_version_major 0)
 set(uavcanblid_hw_version_minor 83)
-set(uavcanblid_name "\"org.ark.cannode\"")
+set(uavcanblid_name "\"org.ark.tscannode\"")
 
 add_definitions(
 	-DHW_UAVCAN_NAME=${uavcanblid_name}

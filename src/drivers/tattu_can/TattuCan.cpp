@@ -56,13 +56,14 @@
 #include <netpacket/can.h>
 
 // #define DEBUG_RX_TRACE
-#define USE_SOCK_CAN 1
+#define USE_SOCK_CAN 0
 
 orb_advert_t _mavlink_log_pub = nullptr;
 
-void debug_print(const char* str){
+void debug_print(const char *str)
+{
 #ifdef DEBUG_RX_TRACE
-	printf("%s",str);
+	printf("%s", str);
 #else
 	UNUSED(str);
 #endif
@@ -90,10 +91,12 @@ TattuCan::~TattuCan()
 
 int TattuCan::init_socket()
 {
+#if USE_SOCK_CAN
 	struct ifreq ifr;
 	struct sockaddr_can addr;
 
 	PX4_INFO("tattu can bus\n");
+
 	if ((_sk = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
 		PX4_ERR("Error opening CAN socket\n");
 		return -1;
@@ -164,14 +167,16 @@ int TattuCan::init_socket()
 	_recv_msg.msg_control = &_recv_control;
 	_recv_msg.msg_controllen = sizeof(_recv_control);
 	_recv_cmsg = CMSG_FIRSTHDR(&_recv_msg);
-
+#else
 	return 0;
+#endif
 
 }
 
 void TattuCan::Run()
 {
 	static hrt_abstime timer;
+
 	if (should_exit()) {
 		exit_and_cleanup();
 		return;
@@ -179,9 +184,24 @@ void TattuCan::Run()
 
 	if (!_initialized) {
 		timer = hrt_absolute_time();
-
+#if USE_SOCK_CAN
 		init_socket();
+#else
+		struct can_dev_s *can = stm32_caninitialize(2);
 
+		if (can == nullptr) {
+			PX4_ERR("Failed to get CAN interface");
+
+		} else {
+			/* Register the CAN driver at "/dev/can0" */
+			int ret = can_register("/dev/can0", can);
+
+			if (ret < 0) {
+				PX4_ERR("can_register failed: %d", ret);
+			}
+		}
+
+#endif
 		mavlink_log_info(&_mavlink_log_pub, "[TUC] Initialized");
 
 		_initialized = true;
@@ -217,11 +237,11 @@ void TattuCan::Run()
 	// meaningful information from the buffer. For now it will be sufficient to get data from the battery
 	// although it won't be reliable and may drop frames
 	while (receive(&received_frame) > 0) {
-		if(hrt_elapsed_time(&timer) > 1*1E6)
-		{
+		if (hrt_elapsed_time(&timer) > 1 * 1E6) {
 			// PX4_INFO("Got %d bytes from can, ID of %lX",received_frame.payload_size, received_frame.extended_can_id);
 			timer = hrt_absolute_time();
 		}
+
 		// Find the start of a transfer
 		if ((received_frame.payload_size == 8) && ((uint8_t *)received_frame.payload)[7] == TAIL_BYTE_START_OF_TRANSFER) {
 		} else {
@@ -245,17 +265,17 @@ void TattuCan::Run()
 			offset += payload_size;
 
 			// Extract the tail byte
-			uint8_t tail = ((uint8_t*)received_frame.payload)[7];
+			uint8_t tail = ((uint8_t *)received_frame.payload)[7];
 
-			if(tail & TAIL_BYTE_END_OF_TRANSFER) {
+			if (tail & TAIL_BYTE_END_OF_TRANSFER) {
 				break;
 			}
 
 			transfer_id = tail & 0x1f;
 		}
+
 		// For the 12s, there should be no more than 7 packets
-		if(transfer_id > 7)
-		{
+		if (transfer_id > 7) {
 			break;
 		}
 
@@ -296,8 +316,9 @@ void TattuCan::Run()
 	}
 }
 
-int16_t TattuCan::can_read(CanFrame *received_frame)
-{
+int16_t TattuCan::can_read(CanFrame * received_frame) {
+#if USE_SOCK_CAN
+
 	if ((_sk < 0) || (received_frame == nullptr)) {
 		PX4_INFO("sk < 0");
 		return -1;
@@ -322,42 +343,47 @@ int16_t TattuCan::can_read(CanFrame *received_frame)
 
 	/* Copy CAN frame to CanardFrame */
 	debug_print("!");
+
 	if (can_fd) {
 		struct canfd_frame *recv_frame = (struct canfd_frame *)&_recv_frame;
 
 		// Filter (ignore) any messages not from our intended packet
-		if ((recv_frame->can_id & CAN_EFF_MASK) != TATTU_CAN_ID){
+		if ((recv_frame->can_id & CAN_EFF_MASK) != TATTU_CAN_ID) {
 			debug_print("x");
 			return -1;
 		}
 
 		received_frame->extended_can_id = recv_frame->can_id & CAN_EFF_MASK;
 		received_frame->payload_size = recv_frame->len;
-		memcpy((void *)received_frame->payload,recv_frame->data,recv_frame->len);
+		memcpy((void *)received_frame->payload, recv_frame->data, recv_frame->len);
+
 	} else {
 		struct can_frame *recv_frame = (struct can_frame *)&_recv_frame;
 
 		// Filter (ignore) any messages not from our intended packet
-		if ((recv_frame->can_id & CAN_EFF_MASK) != TATTU_CAN_ID){
+		if ((recv_frame->can_id & CAN_EFF_MASK) != TATTU_CAN_ID) {
 			debug_print("x");
 			return -1;
 		}
 
 		received_frame->extended_can_id = recv_frame->can_id & CAN_EFF_MASK;
 		received_frame->payload_size = recv_frame->can_dlc;
-		memcpy((void *)received_frame->payload,recv_frame->data,recv_frame->can_dlc);
+		memcpy((void *)received_frame->payload, recv_frame->data, recv_frame->can_dlc);
 	}
 
 	return result;
+#else
+	return 0;
+#endif
 
 }
 
 
-int16_t TattuCan::receive(CanFrame *received_frame)
-{
-	#if USE_SOCK_CAN
+int16_t TattuCan::receive(CanFrame * received_frame) {
+#if USE_SOCK_CAN
 	return can_read(received_frame);
-	#else
+#else
+
 	if ((_fd < 0) || (received_frame == nullptr)) {
 		PX4_INFO("fd < 0");
 		return -1;
@@ -392,11 +418,10 @@ int16_t TattuCan::receive(CanFrame *received_frame)
 	}
 
 	return 0;
-	#endif
+#endif
 }
 
-int TattuCan::start()
-{
+int TattuCan::start() {
 	// There is a race condition at boot that sometimes causes opening of
 	// /dev/can0 to fail. We will delay 0.5s to be safe.
 	uint32_t delay_us = 500000;
@@ -404,18 +429,15 @@ int TattuCan::start()
 	return PX4_OK;
 }
 
-void TattuCan::set_test_mode(bool mode)
-{
+void TattuCan::set_test_mode(bool mode) {
 	_test_mode = mode;
 }
 
-bool TattuCan::get_test_mode()
-{
+bool TattuCan::get_test_mode() {
 	return _test_mode;
 }
 
-int TattuCan::task_spawn(int argc, char *argv[])
-{
+int TattuCan::task_spawn(int argc, char *argv[]) {
 	TattuCan *instance = new TattuCan();
 
 	if (!instance) {
@@ -430,8 +452,7 @@ int TattuCan::task_spawn(int argc, char *argv[])
 	return 0;
 }
 
-int TattuCan::print_usage(const char *reason)
-{
+int TattuCan::print_usage(const char *reason) {
 	if (reason) {
 		printf("%s\n\n", reason);
 	}

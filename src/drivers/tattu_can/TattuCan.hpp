@@ -296,13 +296,13 @@ private:
 	bool can_fd{true};
 	bool _initialized{false};
 	bool _test_mode{false};
-
+#ifdef USE_SOCK_CAN
 	struct iovec       _recv_iov {};
 	struct canfd_frame _recv_frame {};
 	struct msghdr      _recv_msg {};
 	struct cmsghdr     *_recv_cmsg {};
 	uint8_t            _recv_control[sizeof(struct cmsghdr) + sizeof(struct timeval)] {};
-
+#endif
 	uORB::PublicationMulti<battery_status_s> _battery_status_pub{ORB_ID(battery_status)};
 };
 

@@ -127,8 +127,9 @@
 #define GPIO_CAN1_RX	GPIO_CAN1_RX_1
 #define GPIO_CAN1_TX	GPIO_CAN1_TX_1
 
-#define GPIO_CAN2_RX	GPIO_CAN2_RX_2
-#define GPIO_CAN2_TX	GPIO_CAN2_TX_1
+// Pullups needed to get past initialization of socketcan
+#define GPIO_CAN2_RX	GPIO_CAN2_RX_2 | GPIO_PULLUP
+#define GPIO_CAN2_TX	GPIO_CAN2_TX_1 | GPIO_PULLUP
 
 /* SPI */
 #define GPIO_SPI1_MISO  GPIO_SPI1_MISO_1

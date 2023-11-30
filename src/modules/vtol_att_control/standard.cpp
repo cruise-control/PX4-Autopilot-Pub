@@ -204,16 +204,16 @@ void Standard::update_transition_state()
 						     _param_vt_psher_slew.get() * _dt, _param_vt_f_trans_thr.get());
 		}
 
-		_airspeed_trans_blend_margin = _param_vt_arsp_trans.get() - _param_vt_arsp_blend.get();
+		_airspeed_trans_blend_margin = getTransitionAirspeed() - getBlendAirspeed();
 
 		// do blending of mc and fw controls if a blending airspeed has been provided and the minimum transition time has passed
 		if (_airspeed_trans_blend_margin > 0.0f &&
 		    PX4_ISFINITE(_airspeed_validated->calibrated_airspeed_m_s) &&
 		    _airspeed_validated->calibrated_airspeed_m_s > 0.0f &&
-		    _airspeed_validated->calibrated_airspeed_m_s >= _param_vt_arsp_blend.get() &&
+		    _airspeed_validated->calibrated_airspeed_m_s >= getBlendAirspeed() &&
 		    _time_since_trans_start > getMinimumFrontTransitionTime()) {
 
-			mc_weight = 1.0f - fabsf(_airspeed_validated->calibrated_airspeed_m_s - _param_vt_arsp_blend.get()) /
+			mc_weight = 1.0f - fabsf(_airspeed_validated->calibrated_airspeed_m_s - getBlendAirspeed()) /
 				    _airspeed_trans_blend_margin;
 			// time based blending when no airspeed sensor is set
 
@@ -225,6 +225,8 @@ void Standard::update_transition_state()
 
 		// ramp up FW_PSP_OFF
 		_v_att_sp->pitch_body = math::radians(_param_fw_psp_off.get()) * (1.0f - mc_weight);
+
+		_v_att_sp->thrust_body[0] = _pusher_throttle;
 
 		const Quatf q_sp(Eulerf(_v_att_sp->roll_body, _v_att_sp->pitch_body, _v_att_sp->yaw_body));
 		q_sp.copyTo(_v_att_sp->q_d);

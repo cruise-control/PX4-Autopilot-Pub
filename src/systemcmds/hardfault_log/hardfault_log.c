@@ -66,6 +66,10 @@
 #include <px4_platform/progmem_dump.h>
 #endif
 
+#ifdef HAS_SSARC
+#include <ssarc_dump.h>
+#endif
+
 #include "chip.h"
 
 #if defined(CONSTRAINED_FLASH_NO_HELP)
@@ -955,10 +959,6 @@ static int hardfault_commit(char *caller)
 							}
 						}
 
-#ifdef HAS_PROGMEM
-						// Clear flash sector to write new hardfault
-						hardfault_clear(caller, false);
-#endif
 						ret = hardfault_rearm(caller);
 
 						close(fdout);
@@ -1079,6 +1079,10 @@ static int hardfault_dowrite(char *caller, int infd, int outfd,
  ****************************************************************************/
 __EXPORT int hardfault_rearm(char *caller)
 {
+#ifdef HAS_PROGMEM
+	// Clear flash sector to write new hardfault
+	hardfault_clear(caller, false);
+#endif
 	int ret = OK;
 	int rv = unlink(HARDFAULT_PATH);
 

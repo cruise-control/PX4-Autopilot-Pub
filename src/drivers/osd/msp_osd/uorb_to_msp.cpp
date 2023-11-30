@@ -314,9 +314,9 @@ msp_raw_gps_t construct_RAW_GPS(const sensor_gps_s &vehicle_gps_position,
 	msp_raw_gps_t raw_gps {0};
 
 	if (vehicle_gps_position.fix_type >= 2) {
-		raw_gps.lat = vehicle_gps_position.lat;
-		raw_gps.lon = vehicle_gps_position.lon;
-		raw_gps.alt =  vehicle_gps_position.alt / 10;
+		raw_gps.lat = static_cast<int32_t>(vehicle_gps_position.latitude_deg * 1e7);
+		raw_gps.lon = static_cast<int32_t>(vehicle_gps_position.longitude_deg * 1e7);
+		raw_gps.alt = static_cast<int16_t>(vehicle_gps_position.altitude_msl_m * 100.0);
 
 		float course = math::degrees(vehicle_gps_position.cog_rad);
 
@@ -365,7 +365,6 @@ msp_raw_gps_t construct_RAW_GPS(const sensor_gps_s &vehicle_gps_position,
 }
 
 msp_comp_gps_t construct_COMP_GPS(const home_position_s &home_position,
-				  const estimator_status_s &estimator_status,
 				  const vehicle_global_position_s &vehicle_global_position,
 				  const bool heartbeat)
 {
@@ -375,7 +374,8 @@ msp_comp_gps_t construct_COMP_GPS(const home_position_s &home_position,
 	// Calculate distance and direction to home
 	if (home_position.valid_hpos
 	    && home_position.valid_lpos
-	    && estimator_status.solution_status_flags & (1 << 4)) {
+	    && (hrt_elapsed_time(&vehicle_global_position.timestamp) < 1_s)) {
+
 		float bearing_to_home = math::degrees(get_bearing_to_next_waypoint(vehicle_global_position.lat,
 						      vehicle_global_position.lon,
 						      home_position.lat, home_position.lon));
@@ -425,21 +425,20 @@ msp_attitude_t construct_ATTITUDE(const vehicle_attitude_s &vehicle_attitude)
 }
 
 msp_altitude_t construct_ALTITUDE(const sensor_gps_s &vehicle_gps_position,
-				  const estimator_status_s &estimator_status,
 				  const vehicle_local_position_s &vehicle_local_position)
 {
 	// initialize result
 	msp_altitude_t altitude {0};
 
 	if (vehicle_gps_position.fix_type >= 2) {
-		altitude.estimatedActualPosition = vehicle_gps_position.alt / 10;
+		altitude.estimatedActualPosition = static_cast<int32_t>(vehicle_gps_position.altitude_msl_m * 100.0);	// cm
 
 	} else {
 		altitude.estimatedActualPosition = 0;
 	}
 
-	if (estimator_status.solution_status_flags & (1 << 5)) {
-		altitude.estimatedActualVelocity = -vehicle_local_position.vz * 10; //m/s to cm/s
+	if (vehicle_local_position.v_z_valid) {
+		altitude.estimatedActualVelocity = -vehicle_local_position.vz * 100; //m/s to cm/s
 
 	} else {
 		altitude.estimatedActualVelocity = 0;

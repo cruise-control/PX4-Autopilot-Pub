@@ -82,7 +82,7 @@ void Ekf::controlGnssHeightFusion(const gpsSample &gps_sample)
 		if (measurement_valid && gps_checks_passing && !gps_checks_failing) {
 			bias_est.setMaxStateNoise(sqrtf(measurement_var));
 			bias_est.setProcessNoiseSpectralDensity(_params.gps_hgt_bias_nsd);
-			bias_est.fuseBias(measurement - (-_state.pos(2)), measurement_var + P(9, 9));
+			bias_est.fuseBias(measurement - (-_state.pos(2)), measurement_var + P(State::pos.idx + 2, State::pos.idx + 2));
 		}
 
 		// determine if we should use height aiding
@@ -98,8 +98,6 @@ void Ekf::controlGnssHeightFusion(const gpsSample &gps_sample)
 				&& !gps_checks_failing;
 
 		if (_control_status.flags.gps_hgt) {
-			aid_src.fusion_enabled = true;
-
 			if (continuing_conditions_passing) {
 
 				fuseVerticalPosition(aid_src);
@@ -144,6 +142,7 @@ void Ekf::controlGnssHeightFusion(const gpsSample &gps_sample)
 
 					_information_events.flags.reset_hgt_to_gps = true;
 					resetVerticalPositionTo(-measurement, measurement_var);
+					_gpos_origin_epv = 0.f; // The uncertainty of the global origin is now contained in the local position uncertainty
 					bias_est.reset();
 
 				} else {

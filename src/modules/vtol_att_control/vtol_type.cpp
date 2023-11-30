@@ -45,11 +45,17 @@
 #include <float.h>
 #include <px4_platform_common/defines.h>
 #include <matrix/math.hpp>
+#include <lib/atmosphere/atmosphere.h>
 
 using namespace matrix;
 
 #define THROTTLE_BLENDING_DUR_S 1.0f
 
+// [.] minimum ratio between the actual vehicle weight and the vehicle nominal weight (weight at which the performance limits are derived)
+static constexpr float kMinWeightRatio = 0.5f;
+
+// [.] maximum ratio between the actual vehicle weight and the vehicle nominal weight (weight at which the performance limits are derived)
+static constexpr float kMaxWeightRatio = 2.0f;
 
 VtolType::VtolType(VtolAttitudeControl *att_controller) :
 	ModuleParams(nullptr),
@@ -176,7 +182,7 @@ float VtolType::update_and_get_backtransition_pitch_sp()
 	// get accel error, positive means decelerating too slow, need to pitch up (must reverse dec_max, as it is a positive number)
 	const float accel_error_forward = dec_sp + accel_body_forward;
 
-	const float pitch_sp_new = _param_vt_b_dec_ff.get() * dec_sp + _accel_to_pitch_integ;
+	const float pitch_sp_new = _accel_to_pitch_integ;
 
 	float integrator_input = _param_vt_b_dec_i.get() * accel_error_forward;
 
@@ -210,7 +216,7 @@ bool VtolType::isFrontTransitionCompletedBase()
 
 	if (airspeed_triggers_transition) {
 		transition_to_fw = minimum_trans_time_elapsed
-				   && _airspeed_validated->calibrated_airspeed_m_s >= _param_vt_arsp_trans.get();
+				   && _airspeed_validated->calibrated_airspeed_m_s >= getTransitionAirspeed();
 
 	} else {
 		transition_to_fw = openloop_trans_time_elapsed;
@@ -272,26 +278,21 @@ bool VtolType::isMinAltBreached()
 
 bool VtolType::isUncommandedDescent()
 {
-	if (_param_vt_qc_hr_error_i.get() > FLT_EPSILON && _v_control_mode->flag_control_altitude_enabled
+	const float current_altitude = -_local_pos->z + _local_pos->ref_alt;
+
+	if (_param_vt_qc_alt_loss.get() > FLT_EPSILON && _local_pos->z_valid && _local_pos->z_global
+	    && _v_control_mode->flag_control_altitude_enabled
+	    && PX4_ISFINITE(_tecs_status->altitude_reference)
+	    && (current_altitude < _tecs_status->altitude_reference)
 	    && hrt_elapsed_time(&_tecs_status->timestamp) < 1_s) {
 
-		// TODO if TECS publishes local_position_setpoint dependency on tecs_status can be dropped here
+		_quadchute_ref_alt = math::min(math::max(_quadchute_ref_alt, current_altitude),
+					       _tecs_status->altitude_reference);
 
-		if (_tecs_status->height_rate < -FLT_EPSILON && _tecs_status->height_rate_setpoint > FLT_EPSILON) {
-			// vehicle is currently in uncommended descend, start integrating error
+		return (_quadchute_ref_alt - current_altitude) > _param_vt_qc_alt_loss.get();
 
-			const hrt_abstime now = hrt_absolute_time();
-			float dt = static_cast<float>(now - _last_loop_quadchute_timestamp) / 1e6f;
-			dt = math::constrain(dt, 0.0001f, 0.1f);
-			_last_loop_quadchute_timestamp = now;
-
-			_height_rate_error_integral += (_tecs_status->height_rate_setpoint - _tecs_status->height_rate) * dt;
-
-		} else {
-			_height_rate_error_integral = 0.f; // reset
-		}
-
-		return (_height_rate_error_integral > _param_vt_qc_hr_error_i.get());
+	} else {
+		_quadchute_ref_alt = -MAXFLOAT;
 	}
 
 	return false;
@@ -301,19 +302,23 @@ bool VtolType::isFrontTransitionAltitudeLoss()
 {
 	bool result = false;
 
-	if (_param_vt_qc_t_alt_loss.get() > FLT_EPSILON && _common_vtol_mode == mode::TRANSITION_TO_FW && _local_pos->z_valid) {
+	// only run if param set, altitude valid and controlled, and in transition to FW or within 5s of finishing it.
+	if (_param_vt_qc_t_alt_loss.get() > FLT_EPSILON && _local_pos->z_valid && _v_control_mode->flag_control_altitude_enabled
+	    && (_common_vtol_mode == mode::TRANSITION_TO_FW || hrt_elapsed_time(&_trans_finished_ts) < 5_s)) {
 
-		if (_local_pos->z <= FLT_EPSILON) {
-			// vehilce is above home
-			result = _local_pos->z - _local_position_z_start_of_transition > _param_vt_qc_t_alt_loss.get();
-
-		} else {
-			// vehilce is below home
-			result = _local_position_z_start_of_transition - _local_pos->z > _param_vt_qc_t_alt_loss.get();
-		}
+		result = _local_pos->z - _local_position_z_start_of_transition > _param_vt_qc_t_alt_loss.get();
 	}
 
 	return result;
+}
+
+void VtolType::handleEkfResets()
+{
+	// check if there is a reset in the z-direction, and if so, shift the transition start z as well
+	if (_local_pos->z_reset_counter != _altitude_reset_counter) {
+		_local_position_z_start_of_transition += _local_pos->delta_z;
+		_altitude_reset_counter = _local_pos->z_reset_counter;
+	}
 }
 
 bool VtolType::isPitchExceeded()
@@ -347,9 +352,9 @@ bool VtolType::isRollExceeded()
 bool VtolType::isFrontTransitionTimeout()
 {
 	// check front transition timeout
-	if (_param_vt_trans_timeout.get()  > FLT_EPSILON && _common_vtol_mode == mode::TRANSITION_TO_FW) {
+	if (getFrontTransitionTimeout()  > FLT_EPSILON && _common_vtol_mode == mode::TRANSITION_TO_FW) {
 
-		if (_time_since_trans_start > _param_vt_trans_timeout.get()) {
+		if (_time_since_trans_start > getFrontTransitionTimeout()) {
 			// transition timeout occured, abort transition
 			return true;
 		}
@@ -570,7 +575,7 @@ float VtolType::getFrontTransitionTimeFactor() const
 	const float rho = math::constrain(_attc->getAirDensity(), 0.7f, 1.5f);
 
 	if (PX4_ISFINITE(rho)) {
-		float rho0_over_rho = CONSTANTS_AIR_DENSITY_SEA_LEVEL_15C / rho;
+		float rho0_over_rho = atmosphere::kAirDensitySeaLevelStandardAtmos / rho;
 		return sqrtf(rho0_over_rho) * rho0_over_rho;
 	}
 
@@ -582,7 +587,30 @@ float VtolType::getMinimumFrontTransitionTime() const
 	return getFrontTransitionTimeFactor() * _param_vt_trans_min_tm.get();
 }
 
+float VtolType::getFrontTransitionTimeout() const
+{
+	return getFrontTransitionTimeFactor() * _param_vt_trans_timeout.get();
+}
+
 float VtolType::getOpenLoopFrontTransitionTime() const
 {
 	return getFrontTransitionTimeFactor() * _param_vt_f_tr_ol_tm.get();
+}
+float VtolType::getTransitionAirspeed() const
+{
+	return  math::max(_param_vt_arsp_trans.get(), getMinimumTransitionAirspeed());
+}
+float VtolType::getMinimumTransitionAirspeed() const
+{
+	float weight_ratio = 1.0f;
+
+	if (_param_weight_base.get() > FLT_EPSILON && _param_weight_gross.get() > FLT_EPSILON) {
+		weight_ratio = math::constrain(_param_weight_gross.get() / _param_weight_base.get(), kMinWeightRatio, kMaxWeightRatio);
+	}
+
+	return sqrtf(weight_ratio) * _param_airspeed_min.get();
+}
+float VtolType::getBlendAirspeed() const
+{
+	return _param_vt_arsp_blend.get();
 }

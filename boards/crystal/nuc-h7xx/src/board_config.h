@@ -70,26 +70,41 @@
 #define BOARD_ARMED_STATE_LED            LED_BLUE  /* logical BLUE → physical YELLOW (see led.c) */
 
 
-/**
- * Default GPIO pin numbers.  Override at compile-time via Kconfig /
- * cmake variables, or at runtime via module parameters.
+/* HMI pin map — EC11 rotary encoder + ST7789 SPI display *****************************************
  *
- * These correspond to the board's SPI/GPIO breakout, wired as follows:
- *   A    – Encoder phase A  (quadrature)
- *   B    – Encoder phase B  (quadrature)
- *   PUSH – Encoder shaft press button
- *   K0   – Independent back/menu button
+ * The ec11_rotary_encoder and st7789_display drivers read their pins from
+ * runtime parameters (EC11_GPIO_*, ST7789_GPIO_*) rather than these macros.
+ * The board defaults that wire them up live in init/rc.board_defaults; the
+ * macros below are the authoritative, human-readable definition of the wiring
+ * and the comment shows the matching GPIO config word used there.
  *
- * All inputs are active-LOW with internal pull-ups enabled.
+ * Every pin below is exposed on the Nucleo-H753ZI Arduino (Uno R3) header so
+ * the board can drive a standard Arduino-form display/encoder HAT. The Arduino
+ * label (Ax/Dx) is shown next to each STM32 pin.
+ *
+ * EC11 rotary encoder — inputs, active-LOW with internal pull-ups + EXTI.
+ * Pin numbers differ (3/0/1/2) so each maps to a distinct EXTI line:
+ *   A    – phase A  (quadrature)  A0  PA3   0x00010103  (EXTI3)
+ *   B    – phase B  (quadrature)  A1  PC0   0x00010120  (EXTI0)
+ *   PUSH – shaft press button     A3  PB1   0x00010111  (EXTI1)
+ *   K0   – back/menu button       A4  PC2   0x00010122  (EXTI2)
+ *
+ * ST7789 display — SPI1 (SCK PA5/D13, MISO PA6/D12, MOSI PB5/D11) plus control
+ * outputs (push-pull, 50 MHz):
+ *   CS   – chip-select (idle high) D10 PD14  0x0004093E  (software-driven, see spi.cpp)
+ *   DC   – data/command            D9  PD15  0x0004083F
+ *   RES  – reset                   D8  PF3   0x00040853
+ *   BLT  – backlight               D7  PG12  0x0004086C
  */
-#define EC11_GPIO_A     (GPIO_INPUT | GPIO_PULLUP | GPIO_EXTI | GPIO_PORTA | GPIO_PIN0)
-#define EC11_GPIO_B     (GPIO_INPUT | GPIO_PULLUP | GPIO_EXTI | GPIO_PORTA | GPIO_PIN1)
-#define EC11_GPIO_PUSH_BTN   /* PA02 */ (GPIO_INPUT|GPIO_PULLUP|GPIO_EXTI|GPIO_PORTA|GPIO_PIN2)
-#define EC11_GPIO_K0_BTN     /* PA03 */ (GPIO_INPUT|GPIO_PULLUP|GPIO_EXTI|GPIO_PORTA|GPIO_PIN3)
+#define EC11_GPIO_IO_A     /* A0/PA3  */ (GPIO_INPUT|GPIO_PULLUP|GPIO_EXTI|GPIO_PORTA|GPIO_PIN3)
+#define EC11_GPIO_IO_B     /* A1/PC0  */ (GPIO_INPUT|GPIO_PULLUP|GPIO_EXTI|GPIO_PORTC|GPIO_PIN0)
+#define EC11_GPIO_IO_USR_PUSH  /* A3/PB1  */ (GPIO_INPUT|GPIO_PULLUP|GPIO_EXTI|GPIO_PORTB|GPIO_PIN1)
+#define EC11_GPIO_IO_USR_K0    /* A4/PC2  */ (GPIO_INPUT|GPIO_PULLUP|GPIO_EXTI|GPIO_PORTC|GPIO_PIN2)
 
-
-// #define EC11_GPIO_K0    (GPIO_INPUT | GPIO_PULLUP | GPIO_EXTI | GPIO_PORTA | GPIO_PIN3)
-
+#define ST7789_GPIO_IO_CS  /* D10/PD14 */ (GPIO_OUTPUT|GPIO_PUSHPULL|GPIO_SPEED_50MHz|GPIO_OUTPUT_SET|GPIO_PORTD|GPIO_PIN14)
+#define ST7789_GPIO_IO_DC  /* D9/PD15  */ (GPIO_OUTPUT|GPIO_PUSHPULL|GPIO_SPEED_50MHz|GPIO_OUTPUT_CLEAR|GPIO_PORTD|GPIO_PIN15)
+#define ST7789_GPIO_IO_RES /* D8/PF3   */ (GPIO_OUTPUT|GPIO_PUSHPULL|GPIO_SPEED_50MHz|GPIO_OUTPUT_CLEAR|GPIO_PORTF|GPIO_PIN3)
+#define ST7789_GPIO_IO_BLk /* D7/PG12  */ (GPIO_OUTPUT|GPIO_PUSHPULL|GPIO_SPEED_50MHz|GPIO_OUTPUT_CLEAR|GPIO_PORTG|GPIO_PIN12)
 
 
 /* USB OTG FS *************************************************************************************/

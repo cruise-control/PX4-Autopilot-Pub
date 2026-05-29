@@ -35,13 +35,13 @@
  * SPI bus configuration for Crystal NUC-H7xx (Nucleo-H753ZI).
  *
  * SPI1 is brought out on the Arduino shield connector:
- *   PA5  — SCK  (Arduino D13 / CN10 pin 11)
- *   PA6  — MISO (Arduino D12 / CN10 pin 13)
- *   PA7  — MOSI (Arduino D11 / CN10 pin 15)
- *   PA4  — CS   (Arduino D10 / CN10 pin 14)  ← single user-managed chip-select
+ *   PA5  — SCK  (Arduino D13)
+ *   PA6  — MISO (Arduino D12)
+ *   PB5  — MOSI (Arduino D11)
+ *   PD14 — CS   (Arduino D10)  ← single user-managed chip-select
  *
  * The bus is declared external so PX4 does not manage CS automatically;
- * user drivers control PA4 directly.
+ * the st7789_display driver controls PD14 directly via the ST7789_GPIO_CS param.
  */
 
 #include <px4_arch/spi_hw_description.h>
@@ -50,7 +50,7 @@
 
 constexpr px4_spi_bus_t px4_spi_buses[SPI_BUS_MAX_BUS_ITEMS] = {
 	initSPIBusExternal(SPI::Bus::SPI1, {
-		initSPIConfigExternal(SPI::CS{GPIO::PortA, GPIO::Pin4}),
+		initSPIConfigExternal(SPI::CS{GPIO::PortD, GPIO::Pin14}),
 	}),
 };
 

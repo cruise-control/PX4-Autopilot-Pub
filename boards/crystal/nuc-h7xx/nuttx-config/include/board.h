@@ -375,9 +375,9 @@
 
 /* SPI1 — Arduino connector (CN7/CN10) */
 
-#define GPIO_SPI1_MISO   GPIO_SPI1_MISO_1    /* PA6 */
-#define GPIO_SPI1_MOSI   GPIO_SPI1_MOSI_1    /* PA7 */
-#define GPIO_SPI1_SCK    GPIO_SPI1_SCK_1     /* PA5 */
+#define GPIO_SPI1_MISO   GPIO_SPI1_MISO_1    /* PA6 — Arduino D12 */
+#define GPIO_SPI1_MOSI   GPIO_SPI1_MOSI_2    /* PB5 — Arduino D11 (PA7 is NOT on the Arduino header) */
+#define GPIO_SPI1_SCK    GPIO_SPI1_SCK_1     /* PA5 — Arduino D13 */
 
 /* USB OTG FS
  *

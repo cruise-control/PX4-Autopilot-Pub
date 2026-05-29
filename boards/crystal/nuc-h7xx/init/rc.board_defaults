@@ -5,17 +5,29 @@
 # USART3 (ST-LINK VCP, /dev/ttyS2) is the NuttX system console.
 # USB CDC-ACM (/dev/ttyACM0) is started by SYSTEM_CDCACM and carries MAVLink.
 
+# EC11 rotary encoder pin map (STM32 GPIO config words, see src/board_config.h)
+# All on the Arduino analog header; distinct pin numbers -> distinct EXTI lines.
+#   A=A0/PA3  B=A1/PC0  PUSH=A3/PB1  K0=A4/PC2  (input, pull-up, EXTI)
+param set-default EC11_GPIO_PIN_A 65795   # A0/PA3  0x00010103 (EXTI3)
+param set-default EC11_GPIO_PIN_B 65824   # A1/PC0  0x00010120 (EXTI0)
+param set-default EC11_GPIO_PUSH  65809   # A3/PB1  0x00010111 (EXTI1)
+param set-default EC11_GPIO_K0    65826   # A4/PC2  0x00010122 (EXTI2)
+
 # EC11 rotary encoder — start only when phase-A GPIO has been configured.
-# Set EC11_GPIO_PIN_A/B/PUSH/K0 to the STM32 GPIO descriptor word for your
-# pin wiring before enabling this.
 if param greater EC11_GPIO_PIN_A 0
 then
     ec11_rotary_encoder start
 fi
 
+# ST7789 SPI display pin map (STM32 GPIO config words, see src/board_config.h)
+# All on the Arduino digital header.
+#   SPI1 (SCK PA5/D13, MISO PA6/D12, MOSI PB5/D11), CS=D10, DC=D9, RES=D8, BLK=D7
+param set-default ST7789_GPIO_CS  264510  # D10/PD14 0x0004093E (output, idle high)
+param set-default ST7789_GPIO_DC  264255  # D9/PD15  0x0004083F
+param set-default ST7789_GPIO_RES 264275  # D8/PF3   0x00040853
+param set-default ST7789_GPIO_BLK 264300  # D7/PG12  0x0004086C
+
 # ST7789 SPI display — start only when DC GPIO has been configured.
-# Set ST7789_GPIO_RES, ST7789_GPIO_DC, ST7789_GPIO_CS (and optionally
-# ST7789_GPIO_BLK, ST7789_SPI_BUS, ST7789_SPI_FREQ) for your wiring.
 if param greater ST7789_GPIO_DC 0
 then
     st7789_display start

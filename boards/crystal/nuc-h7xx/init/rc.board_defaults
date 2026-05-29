@@ -1,0 +1,6 @@
+#!/bin/sh
+#
+# Crystal NUC-H7xx (Nucleo-H753ZI) board-specific defaults
+#------------------------------------------------------------------------------
+# USB CDC-ACM is the system console (/dev/ttyACM0).
+# USART3 (ST-LINK VCP) is /dev/ttyS2, mapped to TEL1 in default.px4board.

@@ -66,7 +66,7 @@
 
 #define STM32_BOARD_XTAL        8000000ul
 
-#define STM32_HSI_FREQUENCY     64000000ul
+#define STM32_HSI_FREQUENCY     16000000ul  /* NuttX I2C driver requires 16 MHz; H7 actual HSI is 64 MHz */
 #define STM32_LSI_FREQUENCY     32000
 #define STM32_HSE_FREQUENCY     STM32_BOARD_XTAL
 #define STM32_LSE_FREQUENCY     32768
@@ -92,6 +92,7 @@
  */
 
 #define STM32_BOARD_USEHSE
+#define STM32_HSEBYP_ENABLE       /* HSE clock is from ST-LINK MCO (bypass/external clock mode) */
 
 #define STM32_PLLCFG_PLLSRC      RCC_PLLCKSELR_PLLSRC_HSE
 
@@ -364,8 +365,8 @@
 
 /* I2C1 — Arduino connector D14/D15 (CN7) */
 
-#define GPIO_I2C1_SCL GPIO_I2C1_SCL_2        /* PB8 */
-#define GPIO_I2C1_SDA GPIO_I2C1_SDA_2        /* PB9 */
+#define GPIO_I2C1_SCL (GPIO_I2C1_SCL_2 | GPIO_SPEED_50MHz)  /* PB8 - Arduino D15 */
+#define GPIO_I2C1_SDA (GPIO_I2C1_SDA_2 | GPIO_SPEED_50MHz)  /* PB9 - Arduino D14 */
 
 #define GPIO_I2C1_SCL_GPIO \
 	(GPIO_OUTPUT|GPIO_OPENDRAIN|GPIO_SPEED_50MHz|GPIO_OUTPUT_SET|GPIO_PORTB|GPIO_PIN8)

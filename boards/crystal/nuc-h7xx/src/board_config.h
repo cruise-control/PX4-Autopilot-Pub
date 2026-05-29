@@ -113,9 +113,7 @@
 
 #define BOARD_DMA_ALLOC_POOL_SIZE 2048
 
-/* Console buffering ******************************************************************************
- * Buffer early boot output until the USB CDC-ACM console enumerates.
- */
+/* Console ring buffer for dmesg ******************************************************************/
 
 #define BOARD_ENABLE_CONSOLE_BUFFER
 

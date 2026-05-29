@@ -13,7 +13,7 @@ parameters:
         default: 1
         reboot_required: true
 
-      ST7789_SPI_FREQ_KHZ:
+      ST7789_SPI_FREQ:
         description:
           short: SPI clock frequency [kHz]
           long: |

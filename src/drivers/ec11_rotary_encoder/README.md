@@ -50,8 +50,8 @@ button state change.
 |--------------------|---------|------------------------------------|
 | EC11_GPIO_PIN_A    | 0       | GPIO word for encoder phase A      |
 | EC11_GPIO_PIN_B    | 0       | GPIO word for encoder phase B      |
-| EC11_GPIO_PIN_PUSH | 0       | GPIO word for PUSH button          |
-| EC11_GPIO_PIN_K0   | 0       | GPIO word for K0 button            |
+| EC11_GPIO_PUSH     | 0       | GPIO word for PUSH button          |
+| EC11_GPIO_K0       | 0       | GPIO word for K0 button            |
 | EC11_DEBOUNCE_US   | 5000    | Button debounce period [µs]        |
 
 ### Usage
@@ -97,7 +97,7 @@ layout on the 240×320 ST7789 display:
 | Parameter           | Default | Description                         |
 |---------------------|---------|-------------------------------------|
 | ST7789_SPI_BUS      | 1       | SPI bus number                      |
-| ST7789_SPI_FREQ_KHZ | 40000   | SPI clock [kHz]                     |
+| ST7789_SPI_FREQ     | 40000   | SPI clock [kHz]                     |
 | ST7789_GPIO_RES     | 0       | GPIO word for RES pin               |
 | ST7789_GPIO_DC      | 0       | GPIO word for DC pin                |
 | ST7789_GPIO_CS      | 0       | GPIO word for CS pin                |

@@ -90,7 +90,7 @@ Subscribes to `display_command` uORB topic and renders a two-zone layout:
 
 ### Parameters
 ST7789_SPI_BUS       – SPI bus number (default 1)
-ST7789_SPI_FREQ_KHZ  – SPI clock frequency in kHz (default 40000)
+ST7789_SPI_FREQ      – SPI clock frequency in kHz (default 40000)
 ST7789_GPIO_RES      – GPIO config word for RES (reset) pin
 ST7789_GPIO_DC       – GPIO config word for DC (data/command) pin
 ST7789_GPIO_CS       – GPIO config word for CS (chip-select) pin
@@ -112,7 +112,7 @@ bool ST7789Display::init()
 	updateParams();
 
 	_spi_bus   = static_cast<uint32_t>(_param_spi_bus.get());
-	_spi_freq  = static_cast<uint32_t>(_param_spi_freq_khz.get()) * 1000u;
+	_spi_freq  = static_cast<uint32_t>(_param_spi_freq.get()) * 1000u;
 	_gpio_res  = static_cast<uint32_t>(_param_gpio_res.get());
 	_gpio_dc   = static_cast<uint32_t>(_param_gpio_dc.get());
 	_gpio_cs   = static_cast<uint32_t>(_param_gpio_cs.get());
@@ -128,7 +128,7 @@ bool ST7789Display::init()
 	_spi = stm32_spibus_initialize(static_cast<int>(_spi_bus));
 
 	if (!_spi) {
-		PX4_ERR("SPI bus %u init failed", _spi_bus);
+		PX4_ERR("SPI bus %ld init failed", _spi_bus);
 		return false;
 	}
 
@@ -151,7 +151,7 @@ bool ST7789Display::init()
 	_cmd_sub.subscribe();
 	ScheduleOnInterval(33_ms);   // ~30 Hz refresh
 
-	PX4_INFO("ST7789 display driver started  SPI%u @ %u kHz", _spi_bus, _spi_freq/1000);
+	PX4_INFO("ST7789 display driver started  SPI%ld @ %ld kHz", _spi_bus, _spi_freq/1000);
 	return true;
 }
 
@@ -532,16 +532,17 @@ void ST7789Display::Run()
 /* --------------------------------------------------------------------------
  * Status
  * --------------------------------------------------------------------------*/
-void ST7789Display::print_status()
+int ST7789Display::print_status()
 {
 	PX4_INFO("ST7789 Display Driver");
-	PX4_INFO("  SPI bus  : %u @ %u kHz", _spi_bus, _spi_freq / 1000u);
-	PX4_INFO("  GPIO RES : 0x%08X", _gpio_res);
-	PX4_INFO("  GPIO DC  : 0x%08X", _gpio_dc);
-	PX4_INFO("  GPIO CS  : 0x%08X", _gpio_cs);
-	PX4_INFO("  GPIO BLK : 0x%08X", _gpio_blk);
-	PX4_INFO("  Rotation : %d", _param_rotate.get());
+	PX4_INFO("  SPI bus  : %ld @ %ld kHz", _spi_bus, _spi_freq / 1000u);
+	PX4_INFO("  GPIO RES : 0x%08X", (unsigned int)_gpio_res);
+	PX4_INFO("  GPIO DC  : 0x%08X", (unsigned int)_gpio_dc);
+	PX4_INFO("  GPIO CS  : 0x%08X", (unsigned int)_gpio_cs);
+	PX4_INFO("  GPIO BLK : 0x%08X", (unsigned int)_gpio_blk);
+	PX4_INFO("  Rotation : %ld", _param_rotate.get());
 	PX4_INFO("  Init ok  : %s", _initialized ? "yes" : "no");
+	return 0;
 }
 
 /* --------------------------------------------------------------------------

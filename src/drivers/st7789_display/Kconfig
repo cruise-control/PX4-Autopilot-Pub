@@ -1,0 +1,5 @@
+menuconfig DRIVERS_ST7789_DISPLAY
+	bool "st7789_display"
+	default n
+	---help---
+		Enable support for st7789_display

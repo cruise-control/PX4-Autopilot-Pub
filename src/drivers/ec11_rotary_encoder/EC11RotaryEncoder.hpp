@@ -23,30 +23,7 @@
 
 #include <nuttx/ioexpander/gpio.h>   // NuttX GPIO API
 
-/**
- * Default GPIO pin numbers.  Override at compile-time via Kconfig /
- * cmake variables, or at runtime via module parameters.
- *
- * These correspond to the board's SPI/GPIO breakout, wired as follows:
- *   A    – Encoder phase A  (quadrature)
- *   B    – Encoder phase B  (quadrature)
- *   PUSH – Encoder shaft press button
- *   K0   – Independent back/menu button
- *
- * All inputs are active-LOW with internal pull-ups enabled.
- */
-#ifndef EC11_GPIO_A
-#define EC11_GPIO_A     (GPIO_INPUT | GPIO_PULLUP | GPIO_EXTI | GPIO_PORTA | GPIO_PIN0)
-#endif
-#ifndef EC11_GPIO_B
-#define EC11_GPIO_B     (GPIO_INPUT | GPIO_PULLUP | GPIO_EXTI | GPIO_PORTA | GPIO_PIN1)
-#endif
-#ifndef EC11_GPIO_PUSH
-#define EC11_GPIO_PUSH  (GPIO_INPUT | GPIO_PULLUP | GPIO_EXTI | GPIO_PORTA | GPIO_PIN2)
-#endif
-#ifndef EC11_GPIO_K0
-#define EC11_GPIO_K0    (GPIO_INPUT | GPIO_PULLUP | GPIO_EXTI | GPIO_PORTA | GPIO_PIN3)
-#endif
+using namespace time_literals;
 
 /** Software debounce period for buttons [µs] */
 #define EC11_BTN_DEBOUNCE_US  5000ULL
@@ -71,7 +48,7 @@ public:
 	bool init();
 
 	/** Print current driver state to console */
-	void print_status() override;
+	int print_status() override;
 
 private:
 	/* ----- ScheduledWorkItem callback ----- */
@@ -111,8 +88,8 @@ private:
 	DEFINE_PARAMETERS(
 		(ParamInt<px4::params::EC11_GPIO_PIN_A>)    _param_gpio_a,
 		(ParamInt<px4::params::EC11_GPIO_PIN_B>)    _param_gpio_b,
-		(ParamInt<px4::params::EC11_GPIO_PIN_PUSH>) _param_gpio_push,
-		(ParamInt<px4::params::EC11_GPIO_PIN_K0>)   _param_gpio_k0,
+		(ParamInt<px4::params::EC11_GPIO_PUSH>)     _param_gpio_push,
+		(ParamInt<px4::params::EC11_GPIO_K0>)       _param_gpio_k0,
 		(ParamInt<px4::params::EC11_DEBOUNCE_US>)   _param_debounce_us
 	)
 };

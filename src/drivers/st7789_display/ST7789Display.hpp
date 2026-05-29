@@ -44,6 +44,8 @@
 #include <nuttx/spi/spi.h>
 #include <stm32_gpio.h>
 
+using namespace time_literals;
+
 /* ---- Display geometry -------------------------------------------------- */
 #define ST7789_WIDTH       240u
 #define ST7789_HEIGHT      320u
@@ -100,7 +102,7 @@ public:
 	static int print_usage(const char *reason = nullptr);
 
 	bool init();
-	void print_status() override;
+	int print_status() override;
 
 private:
 	/* ----- Work loop ------------------------------------------------------ */
@@ -156,7 +158,7 @@ private:
 	/* ----- Parameters ----------------------------------------------------- */
 	DEFINE_PARAMETERS(
 		(ParamInt<px4::params::ST7789_SPI_BUS>)      _param_spi_bus,
-		(ParamInt<px4::params::ST7789_SPI_FREQ_KHZ>) _param_spi_freq_khz,
+		(ParamInt<px4::params::ST7789_SPI_FREQ>)     _param_spi_freq,
 		(ParamInt<px4::params::ST7789_GPIO_RES>)     _param_gpio_res,
 		(ParamInt<px4::params::ST7789_GPIO_DC>)      _param_gpio_dc,
 		(ParamInt<px4::params::ST7789_GPIO_CS>)      _param_gpio_cs,

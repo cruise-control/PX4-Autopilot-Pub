@@ -108,8 +108,8 @@ Publishes `rotary_encoder_event` uORB topic.
 ### Parameters
 EC11_GPIO_PIN_A   – GPIO configuration word for phase-A line
 EC11_GPIO_PIN_B   – GPIO configuration word for phase-B line
-EC11_GPIO_PIN_PUSH – GPIO configuration word for PUSH button
-EC11_GPIO_PIN_K0  – GPIO configuration word for K0 button
+EC11_GPIO_PUSH – GPIO configuration word for PUSH button
+EC11_GPIO_K0  – GPIO configuration word for K0 button
 EC11_DEBOUNCE_US  – Button debounce period [µs] (default 5000)
 )DESCR_STR");
 
@@ -150,8 +150,8 @@ bool EC11RotaryEncoder::init()
 	ScheduleOnInterval(10_ms);
 
 	PX4_INFO("EC11 encoder driver started – A=0x%08X B=0x%08X PUSH=0x%08X K0=0x%08X",
-	         _param_gpio_a.get(), _param_gpio_b.get(),
-	         _param_gpio_push.get(), _param_gpio_k0.get());
+	         (unsigned int)_param_gpio_a.get(), (unsigned int)_param_gpio_b.get(),
+	         (unsigned int)_param_gpio_push.get(), (unsigned int)_param_gpio_k0.get());
 	return true;
 }
 
@@ -290,17 +290,19 @@ void EC11RotaryEncoder::Run()
 /* -------------------------------------------------------------------------
  * Status output
  * -------------------------------------------------------------------------*/
-void EC11RotaryEncoder::print_status()
+int EC11RotaryEncoder::print_status()
 {
 	PX4_INFO("EC11 Rotary Encoder");
 	PX4_INFO("  Position : %" PRId32, _position);
 	PX4_INFO("  PUSH btn : %s", _push_last_state ? "pressed" : "released");
 	PX4_INFO("  K0   btn : %s", _k0_last_state   ? "pressed" : "released");
-	PX4_INFO("  GPIO A   : 0x%08X", _param_gpio_a.get());
-	PX4_INFO("  GPIO B   : 0x%08X", _param_gpio_b.get());
-	PX4_INFO("  GPIO PUSH: 0x%08X", _param_gpio_push.get());
-	PX4_INFO("  GPIO K0  : 0x%08X", _param_gpio_k0.get());
+	PX4_INFO("  GPIO A   : 0x%08X", (unsigned int)_param_gpio_a.get());
+	PX4_INFO("  GPIO B   : 0x%08X", (unsigned int)_param_gpio_b.get());
+	PX4_INFO("  GPIO PUSH: 0x%08X", (unsigned int)_param_gpio_push.get());
+	PX4_INFO("  GPIO K0  : 0x%08X", (unsigned int)_param_gpio_k0.get());
 	PX4_INFO("  Debounce : %" PRId32 " µs", _param_debounce_us.get());
+
+	return 0;
 }
 
 /* -------------------------------------------------------------------------

@@ -69,6 +69,29 @@
 #define BOARD_OVERLOAD_LED               LED_RED
 #define BOARD_ARMED_STATE_LED            LED_BLUE  /* logical BLUE → physical YELLOW (see led.c) */
 
+
+/**
+ * Default GPIO pin numbers.  Override at compile-time via Kconfig /
+ * cmake variables, or at runtime via module parameters.
+ *
+ * These correspond to the board's SPI/GPIO breakout, wired as follows:
+ *   A    – Encoder phase A  (quadrature)
+ *   B    – Encoder phase B  (quadrature)
+ *   PUSH – Encoder shaft press button
+ *   K0   – Independent back/menu button
+ *
+ * All inputs are active-LOW with internal pull-ups enabled.
+ */
+#define EC11_GPIO_A     (GPIO_INPUT | GPIO_PULLUP | GPIO_EXTI | GPIO_PORTA | GPIO_PIN0)
+#define EC11_GPIO_B     (GPIO_INPUT | GPIO_PULLUP | GPIO_EXTI | GPIO_PORTA | GPIO_PIN1)
+#define EC11_GPIO_PUSH_BTN   /* PA02 */ (GPIO_INPUT|GPIO_PULLUP|GPIO_EXTI|GPIO_PORTA|GPIO_PIN2)
+#define EC11_GPIO_K0_BTN     /* PA03 */ (GPIO_INPUT|GPIO_PULLUP|GPIO_EXTI|GPIO_PORTA|GPIO_PIN3)
+
+
+// #define EC11_GPIO_K0    (GPIO_INPUT | GPIO_PULLUP | GPIO_EXTI | GPIO_PORTA | GPIO_PIN3)
+
+
+
 /* USB OTG FS *************************************************************************************/
 /* PA9 = VBUS sensing (optional; pulled low when USB not connected via ST-LINK power path) */
 

@@ -1,0 +1,5 @@
+menuconfig DRIVERS_EC11_ROTARY_ENCODER
+	bool "ec11_rotary_encoder"
+	default n
+	---help---
+		Enable support for ec11_rotary_encoder

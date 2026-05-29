@@ -22,14 +22,14 @@ parameters:
         default: 0
         reboot_required: true
 
-      EC11_GPIO_PIN_PUSH:
+      EC11_GPIO_PUSH:
         description:
           short: GPIO config word for encoder PUSH button
         type: int32
         default: 0
         reboot_required: true
 
-      EC11_GPIO_PIN_K0:
+      EC11_GPIO_K0:
         description:
           short: GPIO config word for K0 back/menu button
         type: int32

@@ -64,6 +64,7 @@ set(msg_files
 	DebugValue.msg
 	DebugVect.msg
 	DifferentialPressure.msg
+	display_command.msg
 	DistanceSensor.msg
 	DistanceSensorModeChangeRequest.msg
 	DronecanNodeStatus.msg
@@ -181,6 +182,7 @@ set(msg_files
 	RoverPositionSetpoint.msg
 	RoverRateSetpoint.msg
 	RoverRateStatus.msg
+	rotary_encoder_event.msg
 	RoverSpeedSetpoint.msg
 	RoverSpeedStatus.msg
 	RoverSteeringSetpoint.msg

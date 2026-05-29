@@ -1,0 +1,49 @@
+module_name: EC11 Rotary Encoder Driver
+serial_config: []
+
+parameters:
+  - group: EC11 Encoder
+    definitions:
+      EC11_GPIO_PIN_A:
+        description:
+          short: GPIO config word for encoder phase A
+          long: |
+            STM32 GPIO configuration word for the EC11 phase-A input.
+            Encode port and pin using the PX4 GPIO_INPUT | GPIO_PULLUP |
+            GPIO_PORTx | GPIO_PINy macros.
+        type: int32
+        default: 0
+        reboot_required: true
+
+      EC11_GPIO_PIN_B:
+        description:
+          short: GPIO config word for encoder phase B
+        type: int32
+        default: 0
+        reboot_required: true
+
+      EC11_GPIO_PIN_PUSH:
+        description:
+          short: GPIO config word for encoder PUSH button
+        type: int32
+        default: 0
+        reboot_required: true
+
+      EC11_GPIO_PIN_K0:
+        description:
+          short: GPIO config word for K0 back/menu button
+        type: int32
+        default: 0
+        reboot_required: true
+
+      EC11_DEBOUNCE_US:
+        description:
+          short: Button debounce period [µs]
+          long: |
+            Minimum time between recognised button state changes.
+            Increase if spurious presses are detected, decrease for
+            faster response.
+        type: int32
+        min: 1000
+        max: 50000
+        default: 5000

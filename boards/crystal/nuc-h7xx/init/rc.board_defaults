@@ -4,3 +4,19 @@
 #------------------------------------------------------------------------------
 # USART3 (ST-LINK VCP, /dev/ttyS2) is the NuttX system console.
 # USB CDC-ACM (/dev/ttyACM0) is started by SYSTEM_CDCACM and carries MAVLink.
+
+# EC11 rotary encoder — start only when phase-A GPIO has been configured.
+# Set EC11_GPIO_PIN_A/B/PUSH/K0 to the STM32 GPIO descriptor word for your
+# pin wiring before enabling this.
+if param greater EC11_GPIO_PIN_A 0
+then
+    ec11_rotary_encoder start
+fi
+
+# ST7789 SPI display — start only when DC GPIO has been configured.
+# Set ST7789_GPIO_RES, ST7789_GPIO_DC, ST7789_GPIO_CS (and optionally
+# ST7789_GPIO_BLK, ST7789_SPI_BUS, ST7789_SPI_FREQ_KHZ) for your wiring.
+if param greater ST7789_GPIO_DC 0
+then
+    st7789_display start
+fi

@@ -1,0 +1,71 @@
+module_name: ST7789 TFT Display Driver
+serial_config: []
+
+parameters:
+  - group: ST7789 Display
+    definitions:
+      ST7789_SPI_BUS:
+        description:
+          short: SPI bus number for the ST7789 display
+        type: int32
+        min: 1
+        max: 6
+        default: 1
+        reboot_required: true
+
+      ST7789_SPI_FREQ_KHZ:
+        description:
+          short: SPI clock frequency [kHz]
+          long: |
+            SPI clock frequency for the ST7789.  The controller supports up to
+            62.5 MHz write but most boards top out at 40 MHz due to PCB traces.
+        type: int32
+        min: 1000
+        max: 62500
+        default: 40000
+        reboot_required: true
+
+      ST7789_GPIO_RES:
+        description:
+          short: GPIO config word for ST7789 RES (reset) pin
+        type: int32
+        default: 0
+        reboot_required: true
+
+      ST7789_GPIO_DC:
+        description:
+          short: GPIO config word for ST7789 DC (data/command) pin
+        type: int32
+        default: 0
+        reboot_required: true
+
+      ST7789_GPIO_CS:
+        description:
+          short: GPIO config word for ST7789 CS (chip-select) pin
+        type: int32
+        default: 0
+        reboot_required: true
+
+      ST7789_GPIO_BLK:
+        description:
+          short: GPIO config word for ST7789 BLK (backlight) pin
+          long: |
+            Set to 0 to leave the backlight always on (BLK unconnected or
+            tied to VCC).  When set, the pin is driven high on startup and
+            low on shutdown.
+        type: int32
+        default: 0
+        reboot_required: true
+
+      ST7789_ROTATE:
+        description:
+          short: Display rotation
+          long: |
+            0 = Portrait (240×320, USB connector at bottom)
+            1 = Landscape (320×240, USB connector at right)
+        type: int32
+        values:
+          0: Portrait
+          1: Landscape
+        default: 0
+        reboot_required: true

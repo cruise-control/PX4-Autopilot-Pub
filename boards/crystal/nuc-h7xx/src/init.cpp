@@ -168,7 +168,7 @@ __EXPORT int board_app_initialize(uintptr_t arg)
 	};
 
 	/* Initialize the flashfs layer to use heap allocated memory */
-	result = parameter_flashfs_init(params_sector_map, NULL, 0);
+	int result = parameter_flashfs_init(params_sector_map, NULL, 0);
 
 	if (result != OK) {
 		syslog(LOG_ERR, "[boot] FAILED to init params in FLASH %d\n", result);

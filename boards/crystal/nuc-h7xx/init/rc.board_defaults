@@ -5,6 +5,9 @@
 # USART3 (ST-LINK VCP, /dev/ttyS2) is the NuttX system console.
 # USB CDC-ACM (/dev/ttyACM0) is started by SYSTEM_CDCACM and carries MAVLink.
 
+# Turn off the Telemetry for dshot
+param set-default DSHOT_TEL_CFG 0
+
 # EC11 rotary encoder pin map (STM32 GPIO config words, see src/board_config.h)
 # All on the Arduino analog header; distinct pin numbers -> distinct EXTI lines.
 #   A=A0/PA3  B=A1/PC0  PUSH=A3/PB1  K0=A4/PC2  (input, pull-up, EXTI)

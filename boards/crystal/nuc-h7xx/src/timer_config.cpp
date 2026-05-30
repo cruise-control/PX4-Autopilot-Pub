@@ -48,10 +48,14 @@
 
 #include <px4_arch/io_timer_hw_description.h>
 
+// DMA{DMA::Index1} assigns each timer a DMA1 burst (update) stream — required for
+// DShot (the H7 DShot driver allocates one update-DMA channel per timer and skips
+// any timer whose dma_map_up is 0). Without it, up_dshot_init() claims no outputs
+// and the dshot module stops with _output_mask == 0.
 constexpr io_timers_t io_timers[MAX_IO_TIMERS] = {
-	initIOTimer(Timer::Timer1),
-	initIOTimer(Timer::Timer4),
-	initIOTimer(Timer::Timer2),
+	initIOTimer(Timer::Timer1, DMA{DMA::Index1}),
+	initIOTimer(Timer::Timer4, DMA{DMA::Index1}),
+	initIOTimer(Timer::Timer2, DMA{DMA::Index1}),
 };
 
 constexpr timer_io_channels_t timer_io_channels[MAX_TIMER_IO_CHANNELS] = {

@@ -1,71 +1,524 @@
-<mxfile host="app.diagrams.net" type="device">
-  <diagram name="NUC-H7xx Pinmap" id="pinmap1">
-    <mxGraphModel dx="1000" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="640" math="0" shadow="0">
+<mxfile host="Electron" pages="2">
+  <diagram name="NUC-H7xx Pinmap" id="RxFjbT26nS30ii8TmBxh">
+    <mxGraphModel dx="1414" dy="875" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1460" pageHeight="620" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-
-        <!-- Title -->
-        <mxCell id="title" value="Crystal NUC-H7xx (Nucleo-H753ZI) — Connector Pin Map" style="text;html=1;align=center;fontSize=18;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="16" width="940" height="30" as="geometry" />
+        <mxCell id="title" parent="1" style="text;html=1;align=center;fontSize=18;fontStyle=1;" value="Crystal NUC-H7xx (Nucleo-H753ZI) — ST Zio / Arduino Connector Pin Map" vertex="1">
+          <mxGeometry height="30" width="1330" x="40" y="14" as="geometry" />
         </mxCell>
-
-        <!-- Legend -->
-        <mxCell id="lg1" value="EC11 encoder" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1"><mxGeometry x="40" y="56" width="140" height="26" as="geometry" /></mxCell>
-        <mxCell id="lg2" value="ST7789 / SPI1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="190" y="56" width="140" height="26" as="geometry" /></mxCell>
-        <mxCell id="lg3" value="I2C1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="340" y="56" width="120" height="26" as="geometry" /></mxCell>
-        <mxCell id="lg4" value="PWM (TIM)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="470" y="56" width="130" height="26" as="geometry" /></mxCell>
-        <mxCell id="lg5" value="FDCAN1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1"><mxGeometry x="610" y="56" width="120" height="26" as="geometry" /></mxCell>
-        <mxCell id="lg6" value="free / unused" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" vertex="1" parent="1"><mxGeometry x="740" y="56" width="130" height="26" as="geometry" /></mxCell>
-
-        <!-- ===================== Column headers ===================== -->
-        <mxCell id="hA" value="Arduino — Analog (A0–A5)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#333333;fontColor=#ffffff;fontStyle=1;align=center;fontSize=12;" vertex="1" parent="1"><mxGeometry x="40" y="108" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="hB" value="Arduino — Digital D0–D7" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#333333;fontColor=#ffffff;fontStyle=1;align=center;fontSize=12;" vertex="1" parent="1"><mxGeometry x="260" y="108" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="hC" value="Arduino — Digital D8–D15" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#333333;fontColor=#ffffff;fontStyle=1;align=center;fontSize=12;" vertex="1" parent="1"><mxGeometry x="480" y="108" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="hD" value="ST Zio extension (CN9/CN10) — beyond Arduino subset" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1f4e79;fontColor=#ffffff;fontStyle=1;align=center;fontSize=11;" vertex="1" parent="1"><mxGeometry x="700" y="108" width="240" height="30" as="geometry" /></mxCell>
-
-        <!-- ===================== Analog column (x=40) ===================== -->
-        <mxCell id="a0" value="A0 · PA3 — EC11 A (EXTI3)" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1"><mxGeometry x="40" y="143" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="a1" value="A1 · PC0 — EC11 B (EXTI0)" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1"><mxGeometry x="40" y="175" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="a2" value="A2 · PC3 — free" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#f5f5f5;strokeColor=#999999;" vertex="1" parent="1"><mxGeometry x="40" y="207" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="a3" value="A3 · PB1 — EC11 PUSH (EXTI1)" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1"><mxGeometry x="40" y="239" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="a4" value="A4 · PC2 — EC11 K0 (EXTI2)" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1"><mxGeometry x="40" y="271" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="a5" value="A5 · PF10 — free" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#f5f5f5;strokeColor=#999999;" vertex="1" parent="1"><mxGeometry x="40" y="303" width="200" height="30" as="geometry" /></mxCell>
-
-        <!-- ===================== D0–D7 column (x=260) ===================== -->
-        <mxCell id="d0" value="D0 · PB7 — PWM6 (TIM4_CH2)" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1"><mxGeometry x="260" y="143" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="d1" value="D1 · PB6 — PWM5 (TIM4_CH1)" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1"><mxGeometry x="260" y="175" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="d2" value="D2 · PG14 — free" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#f5f5f5;strokeColor=#999999;" vertex="1" parent="1"><mxGeometry x="260" y="207" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="d3" value="D3 · PE13 — PWM3 (TIM1_CH3)" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1"><mxGeometry x="260" y="239" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="d4" value="D4 · PE14 — PWM4 (TIM1_CH4)" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1"><mxGeometry x="260" y="271" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="d5" value="D5 · PE11 — PWM2 (TIM1_CH2)" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1"><mxGeometry x="260" y="303" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="d6" value="D6 · PE9 — PWM1 (TIM1_CH1)" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1"><mxGeometry x="260" y="335" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="d7" value="D7 · PG12 — ST7789 BLK" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="260" y="367" width="200" height="30" as="geometry" /></mxCell>
-
-        <!-- ===================== D8–D15 column (x=480) ===================== -->
-        <mxCell id="d8" value="D8 · PF3 — ST7789 RES" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="480" y="143" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="d9" value="D9 · PD15 — ST7789 DC" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="480" y="175" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="d10" value="D10 · PD14 — ST7789 CS" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="480" y="207" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="d11" value="D11 · PB5 — SPI1 MOSI" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="480" y="239" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="d12" value="D12 · PA6 — SPI1 MISO" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="480" y="271" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="d13" value="D13 · PA5 — SPI1 SCK" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="480" y="303" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="d14" value="D14 · PB9 — I2C1 SDA" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1"><mxGeometry x="480" y="335" width="200" height="30" as="geometry" /></mxCell>
-        <mxCell id="d15" value="D15 · PB8 — I2C1 SCL" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1"><mxGeometry x="480" y="367" width="200" height="30" as="geometry" /></mxCell>
-
-        <!-- ===================== Morpho column (x=700) ===================== -->
-        <mxCell id="m1" value="CN10-32 · PB10 — PWM7 (TIM2_CH3)" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1"><mxGeometry x="700" y="143" width="240" height="30" as="geometry" /></mxCell>
-        <mxCell id="m2" value="CN10-34 · PB11 — PWM8 (TIM2_CH4)" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1"><mxGeometry x="700" y="175" width="240" height="30" as="geometry" /></mxCell>
-        <mxCell id="m3" value="CN9 · PD0 — FDCAN1 RX" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1"><mxGeometry x="700" y="207" width="240" height="30" as="geometry" /></mxCell>
-        <mxCell id="m4" value="CN10 · PD1 — FDCAN1 TX" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1"><mxGeometry x="700" y="239" width="240" height="30" as="geometry" /></mxCell>
-        <mxCell id="mnote" value="All signals reach the ST Zio connectors (CN7–CN10): A0–A5/D0–D15 are the Arduino subset of Zio; PB10/PB11 (PWM7/8) and PD0/PD1 (CAN) are Zio-extension pins. CAN needs an external transceiver (Nucleo has none)." style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;verticalAlign=top;spacingTop=6;fontSize=10;fontColor=#555555;fillColor=#e8f0fe;strokeColor=#6c8ebf;dashed=1;" vertex="1" parent="1"><mxGeometry x="700" y="279" width="240" height="110" as="geometry" /></mxCell>
-
-        <!-- ===================== On-board / fixed pins note ===================== -->
-        <mxCell id="sysHdr" value="On-board / fixed function pins (not on the external HAT headers)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#666666;fontColor=#ffffff;fontStyle=1;align=center;fontSize=12;" vertex="1" parent="1"><mxGeometry x="40" y="430" width="900" height="28" as="geometry" /></mxCell>
-        <mxCell id="sys" value="LEDs: PB0 (green) · PE1 (yellow) · PB14 (red)        USB OTG-FS: PA9 (VBUS) · PA11 (DM) · PA12 (DP)        Console USART3 (ST-LINK VCP): PD8 (TX) · PD9 (RX)        HSE clock: PH0 / PH1 (8 MHz from ST-LINK MCO)" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=10;verticalAlign=middle;fontSize=11;fillColor=#fafafa;strokeColor=#bbbbbb;" vertex="1" parent="1"><mxGeometry x="40" y="458" width="900" height="56" as="geometry" /></mxCell>
-
-        <!-- ===================== PWM/DShot footnote ===================== -->
-        <mxCell id="foot" value="PWM groups → IO timers: TIM1 = outputs 1–4 (DShot-capable, default DShot300), TIM4 = outputs 5–6, TIM2 = outputs 7–8.  Display SPI is SPI1; CS is software-driven on PD14.  All EC11 inputs are pull-up + EXTI on distinct EXTI lines." style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=10;verticalAlign=middle;fontSize=10;fontColor=#444444;fillColor=#ffffff;strokeColor=#dddddd;" vertex="1" parent="1"><mxGeometry x="40" y="524" width="900" height="46" as="geometry" /></mxCell>
-
+        <mxCell id="lg1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" value="EC11 encoder" vertex="1">
+          <mxGeometry height="26" width="150" x="40" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="lg2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" value="ST7789 / SPI1" vertex="1">
+          <mxGeometry height="26" width="150" x="205" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="lg3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=11;" value="SPI4 / SPI5" vertex="1">
+          <mxGeometry height="26" width="150" x="370" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="lg4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" value="I2C (1/2/4)" vertex="1">
+          <mxGeometry height="26" width="150" x="535" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="lg5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b0e3e6;strokeColor=#0e8088;fontSize=11;" value="UART / USART" vertex="1">
+          <mxGeometry height="26" width="150" x="700" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="lg6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" value="PWM (TIM)" vertex="1">
+          <mxGeometry height="26" width="150" x="865" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="lg7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" value="FDCAN1" vertex="1">
+          <mxGeometry height="26" width="150" x="1030" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="lg8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" value="free / unused" vertex="1">
+          <mxGeometry height="26" width="150" x="1195" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="hA" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#333333;fontColor=#ffffff;fontStyle=1;align=center;fontSize=11;" value="Arduino — Analog (A0–A5)" vertex="1">
+          <mxGeometry height="30" width="200" x="40" y="106" as="geometry" />
+        </mxCell>
+        <mxCell id="hB" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#333333;fontColor=#ffffff;fontStyle=1;align=center;fontSize=11;" value="Arduino — Digital D0–D7" vertex="1">
+          <mxGeometry height="30" width="200" x="260" y="106" as="geometry" />
+        </mxCell>
+        <mxCell id="hC" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#333333;fontColor=#ffffff;fontStyle=1;align=center;fontSize=11;" value="Arduino — Digital D8–D15" vertex="1">
+          <mxGeometry height="30" width="200" x="480" y="106" as="geometry" />
+        </mxCell>
+        <mxCell id="hZ1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1f4e79;fontColor=#ffffff;fontStyle=1;align=center;fontSize=11;" value="ST Zio ext — UART / CAN" vertex="1">
+          <mxGeometry height="30" width="210" x="720" y="106" as="geometry" />
+        </mxCell>
+        <mxCell id="hZ2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1f4e79;fontColor=#ffffff;fontStyle=1;align=center;fontSize=11;" value="ST Zio ext — SPI4 / SPI5" vertex="1">
+          <mxGeometry height="30" width="210" x="950" y="106" as="geometry" />
+        </mxCell>
+        <mxCell id="hZ3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1f4e79;fontColor=#ffffff;fontStyle=1;align=center;fontSize=11;" value="ST Zio ext — I2C / PWM" vertex="1">
+          <mxGeometry height="30" width="210" x="1180" y="106" as="geometry" />
+        </mxCell>
+        <mxCell id="a0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;" value="A0 · PA3 — EC11 A (EXTI3)" vertex="1">
+          <mxGeometry height="30" width="200" x="40" y="143" as="geometry" />
+        </mxCell>
+        <mxCell id="a1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;" value="A1 · PC0 — EC11 B (EXTI0)" vertex="1">
+          <mxGeometry height="30" width="200" x="40" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="a2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#f5f5f5;strokeColor=#999999;" value="A2 · PC3 — free" vertex="1">
+          <mxGeometry height="30" width="200" x="40" y="207" as="geometry" />
+        </mxCell>
+        <mxCell id="a3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;" value="A3 · PB1 — EC11 PUSH (EXTI1)" vertex="1">
+          <mxGeometry height="30" width="200" x="40" y="239" as="geometry" />
+        </mxCell>
+        <mxCell id="a4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;" value="A4 · PC2 — EC11 K0 (EXTI2)" vertex="1">
+          <mxGeometry height="30" width="200" x="40" y="271" as="geometry" />
+        </mxCell>
+        <mxCell id="a5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#f5f5f5;strokeColor=#999999;" value="A5 · PF10 — free" vertex="1">
+          <mxGeometry height="30" width="200" x="40" y="303" as="geometry" />
+        </mxCell>
+        <mxCell id="d0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" value="D0 · PB7 — PWM6 (TIM4_CH2)" vertex="1">
+          <mxGeometry height="30" width="200" x="260" y="143" as="geometry" />
+        </mxCell>
+        <mxCell id="d1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" value="D1 · PB6 — PWM5 (TIM4_CH1)" vertex="1">
+          <mxGeometry height="30" width="200" x="260" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="d2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#f5f5f5;strokeColor=#999999;" value="D2 · PG14 — free" vertex="1">
+          <mxGeometry height="30" width="200" x="260" y="207" as="geometry" />
+        </mxCell>
+        <mxCell id="d3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" value="D3 · PE13 — PWM3 (TIM1_CH3)" vertex="1">
+          <mxGeometry height="30" width="200" x="260" y="239" as="geometry" />
+        </mxCell>
+        <mxCell id="d4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" value="D4 · PE14 — PWM4 (TIM1_CH4)" vertex="1">
+          <mxGeometry height="30" width="200" x="260" y="271" as="geometry" />
+        </mxCell>
+        <mxCell id="d5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" value="D5 · PE11 — PWM2 (TIM1_CH2)" vertex="1">
+          <mxGeometry height="30" width="200" x="260" y="303" as="geometry" />
+        </mxCell>
+        <mxCell id="d6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" value="D6 · PE9 — PWM1 (TIM1_CH1)" vertex="1">
+          <mxGeometry height="30" width="200" x="260" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="d7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="D7 · PG12 — ST7789 BLK" vertex="1">
+          <mxGeometry height="30" width="200" x="260" y="367" as="geometry" />
+        </mxCell>
+        <mxCell id="d8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="D8 · PF3 — ST7789 RES" vertex="1">
+          <mxGeometry height="30" width="200" x="480" y="143" as="geometry" />
+        </mxCell>
+        <mxCell id="d9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="D9 · PD15 — ST7789 DC" vertex="1">
+          <mxGeometry height="30" width="200" x="480" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="d10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="D10 · PD14 — ST7789 CS" vertex="1">
+          <mxGeometry height="30" width="200" x="480" y="207" as="geometry" />
+        </mxCell>
+        <mxCell id="d11" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="D11 · PB5 — SPI1 MOSI" vertex="1">
+          <mxGeometry height="30" width="200" x="480" y="239" as="geometry" />
+        </mxCell>
+        <mxCell id="d12" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="D12 · PA6 — SPI1 MISO" vertex="1">
+          <mxGeometry height="30" width="200" x="480" y="271" as="geometry" />
+        </mxCell>
+        <mxCell id="d13" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="D13 · PA5 — SPI1 SCK" vertex="1">
+          <mxGeometry height="30" width="200" x="480" y="303" as="geometry" />
+        </mxCell>
+        <mxCell id="d14" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" value="D14 · PB9 — I2C1 SDA" vertex="1">
+          <mxGeometry height="30" width="200" x="480" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="d15" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" value="D15 · PB8 — I2C1 SCL" vertex="1">
+          <mxGeometry height="30" width="200" x="480" y="367" as="geometry" />
+        </mxCell>
+        <mxCell id="z1a" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#b0e3e6;strokeColor=#0e8088;" value="PD5 — USART2 TX  (ttyS0 / GPS1)" vertex="1">
+          <mxGeometry height="30" width="210" x="720" y="143" as="geometry" />
+        </mxCell>
+        <mxCell id="z1b" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#b0e3e6;strokeColor=#0e8088;" value="PD6 — USART2 RX  (ttyS0 / GPS1)" vertex="1">
+          <mxGeometry height="30" width="210" x="720" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="z1c" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#b0e3e6;strokeColor=#0e8088;" value="PC6 — USART6 TX  (ttyS2 / TEL2)" vertex="1">
+          <mxGeometry height="30" width="210" x="720" y="207" as="geometry" />
+        </mxCell>
+        <mxCell id="z1d" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#b0e3e6;strokeColor=#0e8088;" value="PC7 — USART6 RX  (ttyS2 / TEL2)" vertex="1">
+          <mxGeometry height="30" width="210" x="720" y="239" as="geometry" />
+        </mxCell>
+        <mxCell id="z1e" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#f8cecc;strokeColor=#b85450;" value="CN9 · PD0 — FDCAN1 RX" vertex="1">
+          <mxGeometry height="30" width="210" x="720" y="271" as="geometry" />
+        </mxCell>
+        <mxCell id="z1f" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#f8cecc;strokeColor=#b85450;" value="CN10 · PD1 — FDCAN1 TX" vertex="1">
+          <mxGeometry height="30" width="210" x="720" y="303" as="geometry" />
+        </mxCell>
+        <mxCell id="z2a" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#b1ddf0;strokeColor=#10739e;" value="PE2 — SPI4 SCK" vertex="1">
+          <mxGeometry height="30" width="210" x="950" y="143" as="geometry" />
+        </mxCell>
+        <mxCell id="z2b" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#b1ddf0;strokeColor=#10739e;" value="PE5 — SPI4 MISO" vertex="1">
+          <mxGeometry height="30" width="210" x="950" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="z2c" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#b1ddf0;strokeColor=#10739e;" value="PE6 — SPI4 MOSI" vertex="1">
+          <mxGeometry height="30" width="210" x="950" y="207" as="geometry" />
+        </mxCell>
+        <mxCell id="z2d" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#b1ddf0;strokeColor=#10739e;dashed=1;" value="PE4 — SPI4 CS  (board default)" vertex="1">
+          <mxGeometry height="30" width="210" x="950" y="239" as="geometry" />
+        </mxCell>
+        <mxCell id="z2e" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#b1ddf0;strokeColor=#10739e;" value="PF7 — SPI5 SCK" vertex="1">
+          <mxGeometry height="30" width="210" x="950" y="271" as="geometry" />
+        </mxCell>
+        <mxCell id="z2f" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#b1ddf0;strokeColor=#10739e;" value="PF8 — SPI5 MISO" vertex="1">
+          <mxGeometry height="30" width="210" x="950" y="303" as="geometry" />
+        </mxCell>
+        <mxCell id="z2g" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#b1ddf0;strokeColor=#10739e;" value="PF9 — SPI5 MOSI" vertex="1">
+          <mxGeometry height="30" width="210" x="950" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="z2h" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#b1ddf0;strokeColor=#10739e;dashed=1;" value="PG1 — SPI5 CS  (board default)" vertex="1">
+          <mxGeometry height="30" width="210" x="950" y="367" as="geometry" />
+        </mxCell>
+        <mxCell id="z3a" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" value="PF1 — I2C2 SCL  (bus 2)" vertex="1">
+          <mxGeometry height="30" width="210" x="1180" y="143" as="geometry" />
+        </mxCell>
+        <mxCell id="z3b" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" value="PF0 — I2C2 SDA  (bus 2)" vertex="1">
+          <mxGeometry height="30" width="210" x="1180" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="z3c" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" value="PD12 — I2C4 SCL  (bus 4)" vertex="1">
+          <mxGeometry height="30" width="210" x="1180" y="207" as="geometry" />
+        </mxCell>
+        <mxCell id="z3d" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" value="PD13 — I2C4 SDA  (bus 4)" vertex="1">
+          <mxGeometry height="30" width="210" x="1180" y="239" as="geometry" />
+        </mxCell>
+        <mxCell id="z3e" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;" value="CN10-32 · PB10 — PWM7 (TIM2_CH3)" vertex="1">
+          <mxGeometry height="30" width="210" x="1180" y="271" as="geometry" />
+        </mxCell>
+        <mxCell id="z3f" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;" value="CN10-34 · PB11 — PWM8 (TIM2_CH4)" vertex="1">
+          <mxGeometry height="30" width="210" x="1180" y="303" as="geometry" />
+        </mxCell>
+        <mxCell id="sysHdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#666666;fontColor=#ffffff;fontStyle=1;align=center;fontSize=12;" value="On-board / fixed function pins (not on the external HAT headers)" vertex="1">
+          <mxGeometry height="28" width="1350" x="40" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="sys" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=10;verticalAlign=middle;fontSize=11;fillColor=#fafafa;strokeColor=#bbbbbb;" value="LEDs: PB0 (green) · PE1 (yellow) · PB14 (red)        USB OTG-FS: PA9 (VBUS) · PA11 (DM) · PA12 (DP)        Console USART3 (ST-LINK VCP): PD8 (TX) · PD9 (RX) = /dev/ttyS1 / TEL1        HSE clock: PH0 / PH1 (8 MHz from ST-LINK MCO)" vertex="1">
+          <mxGeometry height="40" width="1350" x="40" y="448" as="geometry" />
+        </mxCell>
+        <mxCell id="foot" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=10;verticalAlign=middle;fontSize=10;fontColor=#444444;fillColor=#e8f0fe;strokeColor=#6c8ebf;" value="All signals route to the ST Zio connectors (CN7–CN10), a superset of Arduino R3. UART roles: USART2 = /dev/ttyS0 (GPS1), USART3 = /dev/ttyS1 (TEL1, VCP console), USART6 = /dev/ttyS2 (TEL2) — ttyS index is sequential among enabled USARTs. SPI4/SPI5 CS pins (PE4/PG1, dashed) are board defaults — set per device. FDCAN1 needs an external transceiver (Nucleo has none)." vertex="1">
+          <mxGeometry height="48" width="1350" x="40" y="496" as="geometry" />
+        </mxCell>
+        <mxCell id="foot2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=10;verticalAlign=middle;fontSize=10;fontColor=#444444;fillColor=#ffffff;strokeColor=#dddddd;" value="PWM groups → IO timers: TIM1 = outputs 1–4 (DShot-capable, default DShot300), TIM4 = outputs 5–6, TIM2 = outputs 7–8.  Display SPI is SPI1 (CS software-driven on PD14).  EC11 inputs are pull-up + EXTI on distinct EXTI lines." vertex="1">
+          <mxGeometry height="40" width="1350" x="40" y="552" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="Physical - ST Zio" id="WxvDQwUywp11HxVorz0Y">
+    <mxGraphModel dx="1414" dy="875" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1340" pageHeight="540" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pt" parent="1" style="text;html=1;align=center;fontSize=15;fontStyle=1;" value="Physical layout - ST Zio connectors (NUCLEO-H753ZI / board MB1364)  -  source: ST UM2407 Rev 6" vertex="1">
+          <mxGeometry height="24" width="1260" x="30" y="16" as="geometry" />
+        </mxCell>
+        <mxCell id="h_cn7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1f4e79;fontColor=#ffffff;fontStyle=1;align=center;fontSize=11;" value="CN7  (2x10)" vertex="1">
+          <mxGeometry height="24" width="208" x="30" y="72" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#b0e3e6;strokeColor=#0e8088;fontColor=#000000" value="1.PC6 USART6-TX" vertex="1">
+          <mxGeometry height="20" width="102" x="30" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000" value="2.PB8 I2C1-SCL" vertex="1">
+          <mxGeometry height="20" width="102" x="134" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="3.PB15 free" vertex="1">
+          <mxGeometry height="20" width="102" x="30" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000" value="4.PB9 I2C1-SDA" vertex="1">
+          <mxGeometry height="20" width="102" x="134" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="5.PB13 free" vertex="1">
+          <mxGeometry height="20" width="102" x="30" y="142" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="6.VREFP" vertex="1">
+          <mxGeometry height="20" width="102" x="134" y="142" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="7.PB12 free" vertex="1">
+          <mxGeometry height="20" width="102" x="30" y="164" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="8.GND" vertex="1">
+          <mxGeometry height="20" width="102" x="134" y="164" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="9.PA15 free" vertex="1">
+          <mxGeometry height="20" width="102" x="30" y="186" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#b1ddf0;strokeColor=#10739e;fontColor=#000000" value="10.PA5 SPI1-SCK" vertex="1">
+          <mxGeometry height="20" width="102" x="134" y="186" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_11" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#b0e3e6;strokeColor=#0e8088;fontColor=#000000" value="11.PC7 USART6-RX" vertex="1">
+          <mxGeometry height="20" width="102" x="30" y="208" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_12" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#b1ddf0;strokeColor=#10739e;fontColor=#000000" value="12.PA6 SPI1-MISO" vertex="1">
+          <mxGeometry height="20" width="102" x="134" y="208" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_13" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="13.PB5 (SPI3)" vertex="1">
+          <mxGeometry height="20" width="102" x="30" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_14" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#b1ddf0;strokeColor=#10739e;fontColor=#000000" value="14.PB5 SPI1-MOSI" vertex="1">
+          <mxGeometry height="20" width="102" x="134" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_15" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="15.PB3 free" vertex="1">
+          <mxGeometry height="20" width="102" x="30" y="252" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_16" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000" value="16.PD14 disp-CS" vertex="1">
+          <mxGeometry height="20" width="102" x="134" y="252" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_17" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="17.PA4 free" vertex="1">
+          <mxGeometry height="20" width="102" x="30" y="274" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_18" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000" value="18.PD15 disp-DC" vertex="1">
+          <mxGeometry height="20" width="102" x="134" y="274" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_19" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="19.PB4 free" vertex="1">
+          <mxGeometry height="20" width="102" x="30" y="296" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn7_20" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000" value="20.PF3 disp-RES" vertex="1">
+          <mxGeometry height="20" width="102" x="134" y="296" as="geometry" />
+        </mxCell>
+        <mxCell id="h_cn8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1f4e79;fontColor=#ffffff;fontStyle=1;align=center;fontSize=11;" value="CN8  (2x8)" vertex="1">
+          <mxGeometry height="24" width="208" x="250" y="72" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn8_1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="1.NC" vertex="1">
+          <mxGeometry height="20" width="102" x="250" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn8_2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000" value="2.PC8 SDMMC-D0" vertex="1">
+          <mxGeometry height="20" width="102" x="354" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn8_3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="3.IOREF" vertex="1">
+          <mxGeometry height="20" width="102" x="250" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn8_4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000" value="4.PC9 SDMMC-D1" vertex="1">
+          <mxGeometry height="20" width="102" x="354" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn8_5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="5.NRST" vertex="1">
+          <mxGeometry height="20" width="102" x="250" y="142" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn8_6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000" value="6.PC10 SDMMC-D2" vertex="1">
+          <mxGeometry height="20" width="102" x="354" y="142" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn8_7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="7.+3V3" vertex="1">
+          <mxGeometry height="20" width="102" x="250" y="164" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn8_8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000" value="8.PC11 SDMMC-D3" vertex="1">
+          <mxGeometry height="20" width="102" x="354" y="164" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn8_9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="9.+5V" vertex="1">
+          <mxGeometry height="20" width="102" x="250" y="186" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn8_10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000" value="10.PC12 SDMMC-CK" vertex="1">
+          <mxGeometry height="20" width="102" x="354" y="186" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn8_11" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="11.GND" vertex="1">
+          <mxGeometry height="20" width="102" x="250" y="208" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn8_12" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000" value="12.PD2 SDMMC-CMD" vertex="1">
+          <mxGeometry height="20" width="102" x="354" y="208" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn8_13" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="13.GND" vertex="1">
+          <mxGeometry height="20" width="102" x="250" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn8_14" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="14.PG2 free" vertex="1">
+          <mxGeometry height="20" width="102" x="354" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn8_15" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="15.VIN" vertex="1">
+          <mxGeometry height="20" width="102" x="250" y="252" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn8_16" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="16.PG3 free" vertex="1">
+          <mxGeometry height="20" width="102" x="354" y="252" as="geometry" />
+        </mxCell>
+        <mxCell id="h_cn9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1f4e79;fontColor=#ffffff;fontStyle=1;align=center;fontSize=11;" value="CN9  (2x15)" vertex="1">
+          <mxGeometry height="24" width="208" x="470" y="72" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#000000" value="1.PA3 EC11-A" vertex="1">
+          <mxGeometry height="20" width="102" x="470" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="2.PD7 free" vertex="1">
+          <mxGeometry height="20" width="102" x="574" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#000000" value="3.PC0 EC11-B" vertex="1">
+          <mxGeometry height="20" width="102" x="470" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#b0e3e6;strokeColor=#0e8088;fontColor=#000000" value="4.PD6 USART2-RX" vertex="1">
+          <mxGeometry height="20" width="102" x="574" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="5.PC3 free" vertex="1">
+          <mxGeometry height="20" width="102" x="470" y="142" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#b0e3e6;strokeColor=#0e8088;fontColor=#000000" value="6.PD5 USART2-TX" vertex="1">
+          <mxGeometry height="20" width="102" x="574" y="142" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#000000" value="7.PB1 EC11-PUSH" vertex="1">
+          <mxGeometry height="20" width="102" x="470" y="164" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="8.PD4 free" vertex="1">
+          <mxGeometry height="20" width="102" x="574" y="164" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#000000" value="9.PC2 EC11-K0" vertex="1">
+          <mxGeometry height="20" width="102" x="470" y="186" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="10.PD3 free" vertex="1">
+          <mxGeometry height="20" width="102" x="574" y="186" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_11" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="11.PF10 free" vertex="1">
+          <mxGeometry height="20" width="102" x="470" y="208" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_12" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="12.GND" vertex="1">
+          <mxGeometry height="20" width="102" x="574" y="208" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_13" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="13.PB2 free" vertex="1">
+          <mxGeometry height="20" width="102" x="470" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_14" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#b1ddf0;strokeColor=#10739e;fontColor=#000000" value="14.PE2 SPI4-SCK" vertex="1">
+          <mxGeometry height="20" width="102" x="574" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_15" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="15.PE9 free*" vertex="1">
+          <mxGeometry height="20" width="102" x="470" y="252" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_16" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#b1ddf0;strokeColor=#10739e;fontColor=#000000" value="16.PE4 SPI4-CS" vertex="1">
+          <mxGeometry height="20" width="102" x="574" y="252" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_17" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="17.PF2 free" vertex="1">
+          <mxGeometry height="20" width="102" x="470" y="274" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_18" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#b1ddf0;strokeColor=#10739e;fontColor=#000000" value="18.PE5 SPI4-MISO" vertex="1">
+          <mxGeometry height="20" width="102" x="574" y="274" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_19" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000" value="19.PF1 I2C2-SCL" vertex="1">
+          <mxGeometry height="20" width="102" x="470" y="296" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_20" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#b1ddf0;strokeColor=#10739e;fontColor=#000000" value="20.PE6 SPI4-MOSI" vertex="1">
+          <mxGeometry height="20" width="102" x="574" y="296" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_21" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000" value="21.PF0 I2C2-SDA" vertex="1">
+          <mxGeometry height="20" width="102" x="470" y="318" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_22" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="22.PE3 free" vertex="1">
+          <mxGeometry height="20" width="102" x="574" y="318" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_23" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="23.GND" vertex="1">
+          <mxGeometry height="20" width="102" x="470" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_24" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#b1ddf0;strokeColor=#10739e;fontColor=#000000" value="24.PF8 SPI5-MISO" vertex="1">
+          <mxGeometry height="20" width="102" x="574" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_25" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#000000" value="25.PD0 CAN-RX" vertex="1">
+          <mxGeometry height="20" width="102" x="470" y="362" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_26" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#b1ddf0;strokeColor=#10739e;fontColor=#000000" value="26.PF7 SPI5-SCK" vertex="1">
+          <mxGeometry height="20" width="102" x="574" y="362" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_27" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#000000" value="27.PD1 CAN-TX" vertex="1">
+          <mxGeometry height="20" width="102" x="470" y="384" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_28" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#b1ddf0;strokeColor=#10739e;fontColor=#000000" value="28.PF9 SPI5-MOSI" vertex="1">
+          <mxGeometry height="20" width="102" x="574" y="384" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_29" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="29.PG0 free" vertex="1">
+          <mxGeometry height="20" width="102" x="470" y="406" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn9_30" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#b1ddf0;strokeColor=#10739e;fontColor=#000000" value="30.PG1 SPI5-CS" vertex="1">
+          <mxGeometry height="20" width="102" x="574" y="406" as="geometry" />
+        </mxCell>
+        <mxCell id="h_cn10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1f4e79;fontColor=#ffffff;fontStyle=1;align=center;fontSize=11;" value="CN10  (2x17)" vertex="1">
+          <mxGeometry height="24" width="208" x="690" y="72" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="1.AVDD" vertex="1">
+          <mxGeometry height="20" width="102" x="690" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000" value="2.PG12 disp-BLK" vertex="1">
+          <mxGeometry height="20" width="102" x="794" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="3.AGND" vertex="1">
+          <mxGeometry height="20" width="102" x="690" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000" value="4.PE9 PWM1" vertex="1">
+          <mxGeometry height="20" width="102" x="794" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="5.GND" vertex="1">
+          <mxGeometry height="20" width="102" x="690" y="142" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000" value="6.PE11 PWM2" vertex="1">
+          <mxGeometry height="20" width="102" x="794" y="142" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="7.PF4 free" vertex="1">
+          <mxGeometry height="20" width="102" x="690" y="164" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000" value="8.PE14 PWM4" vertex="1">
+          <mxGeometry height="20" width="102" x="794" y="164" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="9.PF5 free" vertex="1">
+          <mxGeometry height="20" width="102" x="690" y="186" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000" value="10.PE13 PWM3" vertex="1">
+          <mxGeometry height="20" width="102" x="794" y="186" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_11" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="11.PF6 free" vertex="1">
+          <mxGeometry height="20" width="102" x="690" y="208" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_12" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="12.PG14 free" vertex="1">
+          <mxGeometry height="20" width="102" x="794" y="208" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_13" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="13.PG6 free" vertex="1">
+          <mxGeometry height="20" width="102" x="690" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_14" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000" value="14.PB6 PWM5" vertex="1">
+          <mxGeometry height="20" width="102" x="794" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_15" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="15.PB2 free" vertex="1">
+          <mxGeometry height="20" width="102" x="690" y="252" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_16" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000" value="16.PB7 PWM6" vertex="1">
+          <mxGeometry height="20" width="102" x="794" y="252" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_17" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="17.GND" vertex="1">
+          <mxGeometry height="20" width="102" x="690" y="274" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_18" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="18.PE8 free" vertex="1">
+          <mxGeometry height="20" width="102" x="794" y="274" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_19" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000" value="19.PD13 I2C4-SDA" vertex="1">
+          <mxGeometry height="20" width="102" x="690" y="296" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_20" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="20.PE7 free" vertex="1">
+          <mxGeometry height="20" width="102" x="794" y="296" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_21" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000" value="21.PD12 I2C4-SCL" vertex="1">
+          <mxGeometry height="20" width="102" x="690" y="318" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_22" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="22.GND" vertex="1">
+          <mxGeometry height="20" width="102" x="794" y="318" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_23" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="23.PD11 free" vertex="1">
+          <mxGeometry height="20" width="102" x="690" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_24" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="24.PE10 free" vertex="1">
+          <mxGeometry height="20" width="102" x="794" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_25" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#b1ddf0;strokeColor=#10739e;fontColor=#000000" value="25.PE2 SPI4-SCK alt" vertex="1">
+          <mxGeometry height="20" width="102" x="690" y="362" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_26" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="26.PE12 free" vertex="1">
+          <mxGeometry height="20" width="102" x="794" y="362" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_27" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="27.GND" vertex="1">
+          <mxGeometry height="20" width="102" x="690" y="384" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_28" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="28.PE6 free*" vertex="1">
+          <mxGeometry height="20" width="102" x="794" y="384" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_29" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="29.PA0 free" vertex="1">
+          <mxGeometry height="20" width="102" x="690" y="406" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_30" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="30.PE15 free" vertex="1">
+          <mxGeometry height="20" width="102" x="794" y="406" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_31" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#eeeeee;strokeColor=#b3b3b3;fontColor=#777777;dashed=1" value="31.PB0 LED" vertex="1">
+          <mxGeometry height="20" width="102" x="690" y="428" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_32" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000" value="32.PB10 PWM7" vertex="1">
+          <mxGeometry height="20" width="102" x="794" y="428" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_33" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#f5f5f5;strokeColor=#cccccc;fontColor=#555555" value="33.PE0 free" vertex="1">
+          <mxGeometry height="20" width="102" x="690" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="p_cn10_34" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=3;fontSize=9;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000" value="34.PB11 PWM8" vertex="1">
+          <mxGeometry height="20" width="102" x="794" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="note1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;verticalAlign=top;spacingTop=6;fontSize=10;fillColor=#e8f0fe;strokeColor=#6c8ebf;" value="Buses by connector (UM2407 / MB1364):  CN7 = SPI1 (PA5/PA6/PB5), display CS/DC/RES (PD14/PD15/PF3), I2C1 (PB8/PB9), USART6 (PC6/PC7).  CN9 = encoder (PA3/PC0/PB1/PC2), I2C2 (PF1/PF0), CAN1 (PD0 RX / PD1 TX), USART2 (PD5/PD6), SPI4 (PE2/PE5/PE6, CS PE4), SPI5 (PF7/PF8/PF9, CS PG1).  CN10 = PWM1-8 (PE9/PE11/PE13/PE14, PB6/PB7, PB10/PB11), display BLK (PG12), I2C4 (PD12/PD13).  CN8 = power + SDMMC (no driver signals)." vertex="1">
+          <mxGeometry height="210" width="390" x="910" y="72" as="geometry" />
+        </mxCell>
+        <mxCell id="note2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;verticalAlign=top;spacingTop=6;fontSize=10;fillColor=#fde7e9;strokeColor=#b85450;" value="Shared pins (* = use one position):  PE2 SPI4-SCK on CN9-14 AND CN10-25 (we use CN9-14).  PE6 SPI4-MOSI on CN9-20 AND CN10-28 (we use CN9-20).  PE9 PWM1 on CN10-4 (used) AND CN9-15.  I2C1 PB8/PB9 default to CN7 D15/D14; CN9 A4/A5 are solder-bridge alternates (encoder keeps PC2 at A4)." vertex="1">
+          <mxGeometry height="170" width="390" x="910" y="292" as="geometry" />
+        </mxCell>
+        <mxCell id="leg" parent="1" style="text;html=1;align=left;fontSize=9;fontColor=#555555;" value="Colors: orange=encoder  green=I2C  purple=PWM  blue=display-ctrl  deep-blue=SPI bus  teal=UART  red=CAN  yellow=SDMMC  grey=power/GND  light=free" vertex="1">
+          <mxGeometry height="16" width="1260" x="30" y="476" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>

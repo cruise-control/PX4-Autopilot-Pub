@@ -354,10 +354,15 @@
 #define GPIO_USART1_RX   GPIO_USART1_RX_2    /* PA10 */
 #define GPIO_USART1_TX   GPIO_USART1_TX_2    /* PA9  */
 
-/* USART2 — available on Morpho connector */
+/* USART2 — ST Zio connector (PD5/PD6, CN10) */
 
-#define GPIO_USART2_RX   GPIO_USART2_RX_2    /* PD6 */
-#define GPIO_USART2_TX   GPIO_USART2_TX_2    /* PD5 */
+#define GPIO_USART2_RX   GPIO_USART2_RX_2    /* PD6 — Zio */
+#define GPIO_USART2_TX   GPIO_USART2_TX_2    /* PD5 — Zio */
+
+/* USART6 — ST Zio connector (PC6/PC7) */
+
+#define GPIO_USART6_RX   GPIO_USART6_RX_1    /* PC7 — Zio */
+#define GPIO_USART6_TX   GPIO_USART6_TX_1    /* PC6 — Zio */
 
 /* USART3 — routed to ST-LINK VCP (CN3 USB connector) */
 
@@ -379,15 +384,47 @@
 #define GPIO_I2C1_SDA_GPIO \
 	(GPIO_OUTPUT|GPIO_OPENDRAIN|GPIO_SPEED_50MHz|GPIO_OUTPUT_SET|GPIO_PORTB|GPIO_PIN9)
 
+/* I2C2 — ST Zio connector (PF1/PF0) */
+
+#define GPIO_I2C2_SCL (GPIO_I2C2_SCL_2 | GPIO_SPEED_50MHz)  /* PF1 — Zio */
+#define GPIO_I2C2_SDA (GPIO_I2C2_SDA_2 | GPIO_SPEED_50MHz)  /* PF0 — Zio */
+
+#define GPIO_I2C2_SCL_GPIO \
+	(GPIO_OUTPUT|GPIO_OPENDRAIN|GPIO_SPEED_50MHz|GPIO_OUTPUT_SET|GPIO_PORTF|GPIO_PIN1)
+#define GPIO_I2C2_SDA_GPIO \
+	(GPIO_OUTPUT|GPIO_OPENDRAIN|GPIO_SPEED_50MHz|GPIO_OUTPUT_SET|GPIO_PORTF|GPIO_PIN0)
+
+/* I2C4 — ST Zio connector (PD12/PD13) */
+
+#define GPIO_I2C4_SCL (GPIO_I2C4_SCL_1 | GPIO_SPEED_50MHz)  /* PD12 — Zio */
+#define GPIO_I2C4_SDA (GPIO_I2C4_SDA_1 | GPIO_SPEED_50MHz)  /* PD13 — Zio */
+
+#define GPIO_I2C4_SCL_GPIO \
+	(GPIO_OUTPUT|GPIO_OPENDRAIN|GPIO_SPEED_50MHz|GPIO_OUTPUT_SET|GPIO_PORTD|GPIO_PIN12)
+#define GPIO_I2C4_SDA_GPIO \
+	(GPIO_OUTPUT|GPIO_OPENDRAIN|GPIO_SPEED_50MHz|GPIO_OUTPUT_SET|GPIO_PORTD|GPIO_PIN13)
+
 /* SPI1 — Arduino connector (CN7/CN10) */
 
 #define GPIO_SPI1_MISO   GPIO_SPI1_MISO_1    /* PA6 — Arduino D12 */
 #define GPIO_SPI1_MOSI   GPIO_SPI1_MOSI_2    /* PB5 — Arduino D11 (PA7 is NOT on the Arduino header) */
 #define GPIO_SPI1_SCK    GPIO_SPI1_SCK_1     /* PA5 — Arduino D13 */
 
+/* SPI4 — ST Zio connector (PE2/PE5/PE6) */
+
+#define GPIO_SPI4_MISO   GPIO_SPI4_MISO_2    /* PE5 — Zio */
+#define GPIO_SPI4_MOSI   GPIO_SPI4_MOSI_2    /* PE6 — Zio */
+#define GPIO_SPI4_SCK    GPIO_SPI4_SCK_2     /* PE2 — Zio */
+
+/* SPI5 — ST Zio connector (PF7/PF8/PF9) */
+
+#define GPIO_SPI5_MISO   GPIO_SPI5_MISO_1    /* PF8 — Zio */
+#define GPIO_SPI5_MOSI   GPIO_SPI5_MOSI_2    /* PF9 — Zio */
+#define GPIO_SPI5_SCK    GPIO_SPI5_SCK_1     /* PF7 — Zio */
+
 /* FDCAN1 — routed to an external CAN transceiver (Nucleo has none on board).
- * PD0/PD1 are on the ST Zio/Morpho header (CN11/CN9), not the Arduino subset;
- * the on-Arduino CAN options all clash with I2C1 (PB8/PB9) or SPI1 (PB5). */
+ * PD0 (RX, CN9) and PD1 (TX, CN10) are on the ST Zio connector, just beyond the
+ * Arduino subset; the on-Arduino CAN options all clash with I2C1 (PB8/PB9) or SPI1 (PB5). */
 
 #define GPIO_CAN1_RX     GPIO_CAN1_RX_3      /* PD0 */
 #define GPIO_CAN1_TX     GPIO_CAN1_TX_3      /* PD1 */

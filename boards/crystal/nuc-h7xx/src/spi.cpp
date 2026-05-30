@@ -49,8 +49,17 @@
 #include <nuttx/spi/spi.h>
 
 constexpr px4_spi_bus_t px4_spi_buses[SPI_BUS_MAX_BUS_ITEMS] = {
+	// SPI1 — display, Arduino header (SCK PA5 / MISO PA6 / MOSI PB5), CS PD14
 	initSPIBusExternal(SPI::Bus::SPI1, {
 		initSPIConfigExternal(SPI::CS{GPIO::PortD, GPIO::Pin14}),
+	}),
+	// SPI4 — ST Zio (SCK PE2 / MISO PE5 / MOSI PE6); default user CS on PE4 (Zio)
+	initSPIBusExternal(SPI::Bus::SPI4, {
+		initSPIConfigExternal(SPI::CS{GPIO::PortE, GPIO::Pin4}),
+	}),
+	// SPI5 — ST Zio (SCK PF7 / MISO PF8 / MOSI PF9); default user CS on PG1 (Zio)
+	initSPIBusExternal(SPI::Bus::SPI5, {
+		initSPIConfigExternal(SPI::CS{GPIO::PortG, GPIO::Pin1}),
 	}),
 };
 

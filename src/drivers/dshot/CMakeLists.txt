@@ -42,6 +42,8 @@ px4_add_module(
 	MAIN dshot
 	COMPILE_FLAGS
 		-DPARAM_PREFIX="${PARAM_PREFIX}"
+		# -DDEBUG_BUILD   # uncomment for PX4_DEBUG output
+		# -O0             # uncomment when debugging
 	SRCS
 		DShot.cpp
 		DShotTelemetry.cpp

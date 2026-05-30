@@ -40,8 +40,8 @@
  *   PWM 4  TIM1_CH4  PE14 (Arduino D4)
  *   PWM 5  TIM4_CH1  PB6  (Arduino D1)
  *   PWM 6  TIM4_CH2  PB7  (Arduino D0)
- *   PWM 7  TIM2_CH3  PB10 (Morpho CN10 — off Arduino header)
- *   PWM 8  TIM2_CH4  PB11 (Morpho CN10 — off Arduino header)
+ *   PWM 7  TIM2_CH3  PB10 (ST Zio CN10 pin 32 / D36 — beyond the Arduino subset)
+ *   PWM 8  TIM2_CH4  PB11 (ST Zio CN10 pin 34 / D35 — beyond the Arduino subset)
  *
  *   TIM8 — High-resolution timer (HRT), managed by drv_hrt, not listed here.
  */

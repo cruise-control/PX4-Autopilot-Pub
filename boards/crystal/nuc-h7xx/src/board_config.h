@@ -133,12 +133,13 @@
 /* 8 PWM outputs across three timers (see timer_config.cpp).
  * Arduino labels in brackets — TIM4/TIM2 are the second group added for 8-ch support.
  *
- *   TIM1  CH1 PE9 (D6)  CH2 PE11 (D5)  CH3 PE13 (D3)  CH4 PE14 (D4)  — Arduino header
- *   TIM4  CH1 PB6 (D1)  CH2 PB7  (D0)                                — Arduino header
- *   TIM2  CH3 PB10      CH4 PB11                                     — Morpho header (off Arduino)
+ *   TIM1  CH1 PE9 (D6)  CH2 PE11 (D5)  CH3 PE13 (D3)  CH4 PE14 (D4)  — Arduino subset
+ *   TIM4  CH1 PB6 (D1)  CH2 PB7  (D0)                                — Arduino subset
+ *   TIM2  CH3 PB10 (CN10-32/D36)  CH4 PB11 (CN10-34/D35)            — ST Zio extension
  *
- * Only two Arduino-header pins (PB6/PB7) have a free timer output, so the last
- * two channels live on the Morpho header (PB10/PB11).
+ * Only two Arduino-subset pins (PB6/PB7) have a free timer output, so the last
+ * two channels use PB10/PB11. Those are NOT on the Arduino subset but ARE on the
+ * ST Zio connector (CN10 pins 32/34), so all 8 outputs reach a Zio-form HAT.
  */
 
 #define DIRECT_PWM_OUTPUT_CHANNELS  8

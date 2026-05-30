@@ -45,6 +45,7 @@
 #include <string.h>
 #include <debug.h>
 #include <errno.h>
+#include <syslog.h>
 
 #include <nuttx/config.h>
 #include <nuttx/board.h>
@@ -61,6 +62,26 @@
 #include <px4_platform/gpio.h>
 #include <px4_platform/board_dma_alloc.h>
 
+#include <mpu.h>
+
+# if defined(FLASH_BASED_PARAMS)
+#  include <parameters/flashparams/flashfs.h>
+#endif
+
+
+/****************************************************************************
+ * Pre-Processor Definitions
+ ****************************************************************************/
+
+/* Configuration ************************************************************/
+
+/*
+ * Ideally we'd be able to get these from arm_internal.h,
+ * but since we want to be able to disable the NuttX use
+ * of leds for system indication at will and there is no
+ * separate switch, we need to build independent of the
+ * CONFIG_ARCH_LEDS configuration switch.
+ */
 __BEGIN_DECLS
 extern void led_init(void);
 extern void led_on(int led);
@@ -140,6 +161,23 @@ __EXPORT int board_app_initialize(uintptr_t arg)
 	if (board_hardfault_init(2, true) != 0) {
 		led_on(LED_RED);
 	}
+#if defined(FLASH_BASED_PARAMS)
+	static sector_descriptor_t params_sector_map[] = {
+		{15, 128 * 1024, 0x081E0000},
+		{0, 0, 0},
+	};
+
+	/* Initialize the flashfs layer to use heap allocated memory */
+	result = parameter_flashfs_init(params_sector_map, NULL, 0);
+
+	if (result != OK) {
+		syslog(LOG_ERR, "[boot] FAILED to init params in FLASH %d\n", result);
+		led_on(LED_AMBER);
+	}
+
+#endif
+
+	/* Configure the HW based on the manifest */
 
 	px4_platform_configure();
 

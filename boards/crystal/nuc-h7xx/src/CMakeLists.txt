@@ -61,11 +61,13 @@ else()
 		timer_config.cpp
 		usb.c
 	)
+	add_dependencies(drivers_board arch_board_hw_info)
 
 	target_link_libraries(drivers_board
 		PRIVATE
 			arch_io_pins
 			arch_spi
+			arch_board_hw_info
 			drivers__led
 			nuttx_arch
 			nuttx_drivers

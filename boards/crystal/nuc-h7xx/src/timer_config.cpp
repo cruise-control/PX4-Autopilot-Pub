@@ -32,12 +32,16 @@
  ****************************************************************************/
 
 /**
- * Timer allocation for Crystal NUC-H7xx (Nucleo-H753ZI):
+ * Timer allocation for Crystal NUC-H7xx (Nucleo-H753ZI) — 8 PWM outputs:
  *
- *   TIM1_CH1  PE9  — PWM output 1 (Morpho CN10 pin 4 )
- *   TIM1_CH2  PE11 — PWM output 2 (Morpho CN10 pin 6 )
- *   TIM1_CH3  PE13 — PWM output 3 (Morpho CN10 pin 10)
- *   TIM1_CH4  PE14 — PWM output 4 (Morpho CN10 pin 28)
+ *   PWM 1  TIM1_CH1  PE9  (Arduino D6)
+ *   PWM 2  TIM1_CH2  PE11 (Arduino D5)
+ *   PWM 3  TIM1_CH3  PE13 (Arduino D3)
+ *   PWM 4  TIM1_CH4  PE14 (Arduino D4)
+ *   PWM 5  TIM4_CH1  PB6  (Arduino D1)
+ *   PWM 6  TIM4_CH2  PB7  (Arduino D0)
+ *   PWM 7  TIM2_CH3  PB10 (Morpho CN10 — off Arduino header)
+ *   PWM 8  TIM2_CH4  PB11 (Morpho CN10 — off Arduino header)
  *
  *   TIM8 — High-resolution timer (HRT), managed by drv_hrt, not listed here.
  */
@@ -46,6 +50,8 @@
 
 constexpr io_timers_t io_timers[MAX_IO_TIMERS] = {
 	initIOTimer(Timer::Timer1),
+	initIOTimer(Timer::Timer4),
+	initIOTimer(Timer::Timer2),
 };
 
 constexpr timer_io_channels_t timer_io_channels[MAX_TIMER_IO_CHANNELS] = {
@@ -53,6 +59,10 @@ constexpr timer_io_channels_t timer_io_channels[MAX_TIMER_IO_CHANNELS] = {
 	initIOTimerChannel(io_timers, {Timer::Timer1, Timer::Channel2}, {GPIO::PortE, GPIO::Pin11}),
 	initIOTimerChannel(io_timers, {Timer::Timer1, Timer::Channel3}, {GPIO::PortE, GPIO::Pin13}),
 	initIOTimerChannel(io_timers, {Timer::Timer1, Timer::Channel4}, {GPIO::PortE, GPIO::Pin14}),
+	initIOTimerChannel(io_timers, {Timer::Timer4, Timer::Channel1}, {GPIO::PortB, GPIO::Pin6}),
+	initIOTimerChannel(io_timers, {Timer::Timer4, Timer::Channel2}, {GPIO::PortB, GPIO::Pin7}),
+	initIOTimerChannel(io_timers, {Timer::Timer2, Timer::Channel3}, {GPIO::PortB, GPIO::Pin10}),
+	initIOTimerChannel(io_timers, {Timer::Timer2, Timer::Channel4}, {GPIO::PortB, GPIO::Pin11}),
 };
 
 constexpr io_timers_channel_mapping_t io_timers_channel_mapping =

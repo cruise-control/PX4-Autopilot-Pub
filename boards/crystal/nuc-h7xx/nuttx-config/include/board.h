@@ -254,6 +254,12 @@
 
 #define STM32_RCC_D2CCIP2R_USBSRC    RCC_D2CCIP2R_USBSEL_PLL3
 
+/* FDCAN clock source — HSE (8 MHz). Sufficient for the standard DroneCAN
+ * bit rates (1 Mbit/s and below). */
+
+#define STM32_RCC_D2CCIP1R_FDCANSEL  RCC_D2CCIP1R_FDCANSEL_HSE
+#define STM32_FDCANCLK               STM32_HSE_FREQUENCY
+
 /* ADC 1 2 3 clock source — PLL2P = 96 MHz */
 
 #define STM32_RCC_D3CCIPR_ADCSRC     RCC_D3CCIPR_ADCSEL_PLL2
@@ -378,6 +384,13 @@
 #define GPIO_SPI1_MISO   GPIO_SPI1_MISO_1    /* PA6 — Arduino D12 */
 #define GPIO_SPI1_MOSI   GPIO_SPI1_MOSI_2    /* PB5 — Arduino D11 (PA7 is NOT on the Arduino header) */
 #define GPIO_SPI1_SCK    GPIO_SPI1_SCK_1     /* PA5 — Arduino D13 */
+
+/* FDCAN1 — routed to an external CAN transceiver (Nucleo has none on board).
+ * PD0/PD1 are on the ST Zio/Morpho header (CN11/CN9), not the Arduino subset;
+ * the on-Arduino CAN options all clash with I2C1 (PB8/PB9) or SPI1 (PB5). */
+
+#define GPIO_CAN1_RX     GPIO_CAN1_RX_3      /* PD0 */
+#define GPIO_CAN1_TX     GPIO_CAN1_TX_3      /* PD1 */
 
 /* USB OTG FS
  *

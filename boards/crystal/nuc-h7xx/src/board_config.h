@@ -52,7 +52,7 @@
 /****************************************************************************************************
  * Definitions
  ****************************************************************************************************/
-
+#define FLASH_BASED_PARAMS
 /* LEDs *******************************************************************************************/
 /* Nucleo-H753ZI user LEDs — all active HIGH, push-pull
  *
@@ -130,15 +130,19 @@
 #define HRT_TIMER_CHANNEL       3  /* CC3 output compare, no GPIO needed */
 
 /* PWM IO timer configuration *********************************************************************/
-/* TIM1 on APB2, channels on Morpho connector (CN10):
- *   CH1 : PE9
- *   CH2 : PE11
- *   CH3 : PE13
- *   CH4 : PE14
+/* 8 PWM outputs across three timers (see timer_config.cpp).
+ * Arduino labels in brackets — TIM4/TIM2 are the second group added for 8-ch support.
+ *
+ *   TIM1  CH1 PE9 (D6)  CH2 PE11 (D5)  CH3 PE13 (D3)  CH4 PE14 (D4)  — Arduino header
+ *   TIM4  CH1 PB6 (D1)  CH2 PB7  (D0)                                — Arduino header
+ *   TIM2  CH3 PB10      CH4 PB11                                     — Morpho header (off Arduino)
+ *
+ * Only two Arduino-header pins (PB6/PB7) have a free timer output, so the last
+ * two channels live on the Morpho header (PB10/PB11).
  */
 
-#define DIRECT_PWM_OUTPUT_CHANNELS  4
-#define BOARD_NUM_IO_TIMERS         1
+#define DIRECT_PWM_OUTPUT_CHANNELS  8
+#define BOARD_NUM_IO_TIMERS         3
 
 /* Power / battery monitoring *********************************************************************/
 /* No external power management IC on Nucleo — disable brick monitoring entirely. */

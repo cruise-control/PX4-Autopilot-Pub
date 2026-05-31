@@ -38,9 +38,7 @@
 #define _FLASH_KBYTES                  (*(uint32_t *)0x1FF1E880)
 #define BOARD_FLASH_SECTORS            (15)
 #define BOARD_FLASH_SIZE               (_FLASH_KBYTES * 1024)
-
-/* No sectors reserved for application use beyond the bootloader sector */
-#define APP_RESERVATION_SIZE           0
+#define APP_RESERVATION_SIZE           (1 * 128 * 1024)
 
 /* HSE oscillator frequency in MHz */
 #define OSC_FREQ                       8

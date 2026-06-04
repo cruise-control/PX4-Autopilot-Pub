@@ -324,6 +324,20 @@ void ST7789Display::set_window(uint16_t x0, uint16_t y0,
 }
 
 /* --------------------------------------------------------------------------
+ * Bulk pixel blit: one CS-framed SPI_SNDBLOCK. With SPI DMA enabled this is a
+ * single DMA transfer instead of one 2-byte PIO write per pixel. The caller
+ * must have already issued set_window() (which leaves CS de-asserted), and
+ * len must be <= sizeof(_blit) (== the SPI DMA buffer) to stay on the DMA path.
+ * --------------------------------------------------------------------------*/
+void ST7789Display::blit(const uint8_t *buf, size_t len)
+{
+	stm32_gpiowrite(_gpio_dc, true);    // data
+	stm32_gpiowrite(_gpio_cs, false);   // re-assert CS (set_window left it high)
+	SPI_SNDBLOCK(_spi, buf, len);
+	stm32_gpiowrite(_gpio_cs, true);
+}
+
+/* --------------------------------------------------------------------------
  * Fill a rectangular region with a solid colour
  * --------------------------------------------------------------------------*/
 void ST7789Display::fill_rect(uint16_t x, uint16_t y,
@@ -331,34 +345,29 @@ void ST7789Display::fill_rect(uint16_t x, uint16_t y,
 {
 	if (!_spi) { return; }
 
-	stm32_gpiowrite(_gpio_cs, false);
-	set_window(x, y, static_cast<uint16_t>(x + w - 1u),
-	                  static_cast<uint16_t>(y + h - 1u));
-
-	/* Send pixel data — use a small line-buffer to minimise SPI overhead */
 	const uint32_t pixels = static_cast<uint32_t>(w) * h;
-	/* Sized for the longest line = 320 px (landscape width) → 640 bytes */
-	static uint8_t linebuf[ST7789_HEIGHT * 2];
+	if (pixels == 0u) { return; }
 
-	const uint16_t lw = (w <= ST7789_HEIGHT) ? w : ST7789_HEIGHT;
-	for (uint16_t i = 0; i < lw; i++) {
-		linebuf[i * 2u]     = static_cast<uint8_t>(color >> 8);
-		linebuf[i * 2u + 1u] = static_cast<uint8_t>(color & 0xFF);
+	/* Pre-expand the colour once into the shared blit buffer (up to 512 px =
+	 * 1024 B = the SPI DMA buffer) and stream it out in DMA-sized chunks. */
+	const uint8_t hi = static_cast<uint8_t>(color >> 8);
+	const uint8_t lo = static_cast<uint8_t>(color & 0xFF);
+	const uint16_t bufpx = (pixels < kBlitPixels) ? static_cast<uint16_t>(pixels) : kBlitPixels;
+	for (uint16_t i = 0; i < bufpx; i++) {
+		_blit[i * 2u]      = hi;
+		_blit[i * 2u + 1u] = lo;
 	}
 
-	/* set_window() ends each command/data phase by raising CS, so CS is HIGH
-	 * here. The bulk pixel write below uses raw SPI_SNDBLOCK and does NOT toggle
-	 * CS itself, so it must be re-asserted — otherwise the fill is clocked out
-	 * while the panel is deselected and silently dropped, leaving the screen
-	 * full of un-cleared RAM (and status/numeric boxes never erased). */
+	set_window(x, y, static_cast<uint16_t>(x + w - 1u),
+	                 static_cast<uint16_t>(y + h - 1u));
+
+	/* set_window() left CS de-asserted; hold it low for the whole RAMWR stream. */
 	stm32_gpiowrite(_gpio_dc, true);
 	stm32_gpiowrite(_gpio_cs, false);
-
-	for (uint32_t p = 0; p < pixels; p += lw) {
-		const uint32_t chunk = ((p + lw) <= pixels) ? lw : (pixels - p);
-		SPI_SNDBLOCK(_spi, linebuf, chunk * 2u);
+	for (uint32_t p = 0; p < pixels; p += bufpx) {
+		const uint32_t chunk = ((p + bufpx) <= pixels) ? bufpx : (pixels - p);
+		SPI_SNDBLOCK(_spi, _blit, chunk * 2u);
 	}
-
 	stm32_gpiowrite(_gpio_cs, true);
 }
 
@@ -372,23 +381,24 @@ void ST7789Display::draw_char_small(uint16_t x, uint16_t y, char c,
 
 	const uint8_t *glyph = kFont8x16[static_cast<uint8_t>(c) - kFont8x16FirstChar];
 
-	stm32_gpiowrite(_gpio_cs, false);
-	set_window(x, y,
-	           static_cast<uint16_t>(x + kFont8x16GlyphW - 1u),
-	           static_cast<uint16_t>(y + kFont8x16GlyphH - 1u));
-
-	stm32_gpiowrite(_gpio_dc, true);
-
+	/* Expand the glyph into RGB565 big-endian bytes, then blit in one transfer
+	 * (8x16 = 128 px = 256 B) instead of 128 individual 2-byte PIO writes. */
+	const uint8_t fhi = static_cast<uint8_t>(fg >> 8), flo = static_cast<uint8_t>(fg & 0xFF);
+	const uint8_t bhi = static_cast<uint8_t>(bg >> 8), blo = static_cast<uint8_t>(bg & 0xFF);
+	size_t n = 0;
 	for (uint16_t row = 0; row < kFont8x16GlyphH; row++) {
 		uint8_t bits = glyph[row];
 		for (uint8_t col = 0; col < kFont8x16GlyphW; col++) {
-			uint16_t px = (bits & 0x80u) ? fg : bg;
-			send_data_u16(px);
+			if (bits & 0x80u) { _blit[n++] = fhi; _blit[n++] = flo; }
+			else              { _blit[n++] = bhi; _blit[n++] = blo; }
 			bits <<= 1u;
 		}
 	}
 
-	stm32_gpiowrite(_gpio_cs, true);
+	set_window(x, y,
+	           static_cast<uint16_t>(x + kFont8x16GlyphW - 1u),
+	           static_cast<uint16_t>(y + kFont8x16GlyphH - 1u));
+	blit(_blit, n);
 }
 
 void ST7789Display::draw_string_small(uint16_t x, uint16_t y, const char *str,
@@ -409,23 +419,25 @@ void ST7789Display::draw_char_large(uint16_t x, uint16_t y, char c,
 	const int idx = large_glyph_index(c);
 	const uint16_t *glyph = kFontLarge[idx];
 
-	stm32_gpiowrite(_gpio_cs, false);
-	set_window(x, y,
-	           static_cast<uint16_t>(x + kFontLargeGlyphW - 1u),
-	           static_cast<uint16_t>(y + kFontLargeGlyphH - 1u));
-
-	stm32_gpiowrite(_gpio_dc, true);
-
+	/* Expand the glyph into RGB565 big-endian bytes, then blit in one transfer
+	 * (16x32 = 512 px = 1024 B, exactly the SPI DMA buffer) instead of 512
+	 * individual 2-byte PIO writes. */
+	const uint8_t fhi = static_cast<uint8_t>(fg >> 8), flo = static_cast<uint8_t>(fg & 0xFF);
+	const uint8_t bhi = static_cast<uint8_t>(bg >> 8), blo = static_cast<uint8_t>(bg & 0xFF);
+	size_t n = 0;
 	for (uint16_t row = 0; row < kFontLargeGlyphH; row++) {
 		uint16_t bits = glyph[row];
 		for (uint16_t col = 0; col < kFontLargeGlyphW; col++) {
-			uint16_t px = (bits & 0x8000u) ? fg : bg;
-			send_data_u16(px);
+			if (bits & 0x8000u) { _blit[n++] = fhi; _blit[n++] = flo; }
+			else                { _blit[n++] = bhi; _blit[n++] = blo; }
 			bits = static_cast<uint16_t>(bits << 1u);
 		}
 	}
 
-	stm32_gpiowrite(_gpio_cs, true);
+	set_window(x, y,
+	           static_cast<uint16_t>(x + kFontLargeGlyphW - 1u),
+	           static_cast<uint16_t>(y + kFontLargeGlyphH - 1u));
+	blit(_blit, n);
 }
 
 void ST7789Display::draw_string_large(uint16_t x, uint16_t y, const char *str,

@@ -47,6 +47,7 @@
  *                                                                           V
  */
 
-/* SPI1 on DMA2 for future sensor use                                       */
-// #define DMAMAP_SPI1_RX    DMAMAP_DMA12_SPI1RX_1     /* DMA2:37 */
-// #define DMAMAP_SPI1_TX    DMAMAP_DMA12_SPI1TX_1     /* DMA2:38 */
+/* SPI1 DMA — ST7789 display bulk writes (fill_rect / pixel blits).          */
+/* On DMA2 because DMA1 is used by the DShot timer-burst streams.            */
+#define DMAMAP_SPI1_RX    DMAMAP_DMA12_SPI1RX_1     /* DMA2 (TX-only display; RX discarded) */
+#define DMAMAP_SPI1_TX    DMAMAP_DMA12_SPI1TX_1     /* DMA2 */

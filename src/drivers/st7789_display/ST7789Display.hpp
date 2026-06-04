@@ -115,6 +115,7 @@ private:
 	void send_cmd(uint8_t cmd);
 	void send_data(const uint8_t *data, size_t len);
 	void send_data_u16(uint16_t word);
+	void blit(const uint8_t *buf, size_t len);   ///< CS-framed bulk write (one DMA transfer)
 	void set_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
 	void fill_rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
 
@@ -156,6 +157,10 @@ private:
 	char     _last_status[32]{};
 	uint8_t  _last_status_color{0xFF};   ///< Force first draw
 	bool     _initialized{false};
+
+	/* ----- Shared blit buffer (solid fills + glyph rendering) ------------- */
+	static constexpr uint16_t kBlitPixels = 512;   ///< 1024 B == SPI DMA buffer size
+	uint8_t  _blit[kBlitPixels * 2u]{};
 
 	/* ----- uORB ----------------------------------------------------------- */
 	uORB::Subscription _cmd_sub{ORB_ID(display_command)};

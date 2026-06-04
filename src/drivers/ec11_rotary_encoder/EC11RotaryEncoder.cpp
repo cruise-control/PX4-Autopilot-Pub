@@ -37,10 +37,10 @@
  */
 static constexpr int8_t kQuadTable[16] = {
 /*        curr: 00  01  10  11          prev */
-/* 00 */      0,  1, -1,  0,
-/* 01 */     -1,  0,  0,  1,
-/* 10 */      1,  0,  0, -1,
-/* 11 */      0, -1,  1,  0
+/* 00 */      0,  -1, 1,  0,
+/* 01 */      1,  0,  0,  -1,
+/* 10 */      -1,  0,  0, 1,
+/* 11 */      0, 1,  -1,  0
 };
 
 /* -------------------------------------------------------------------------
@@ -198,8 +198,8 @@ void EC11RotaryEncoder::process_encoder_step(bool a_level, bool b_level)
 	int8_t  step = kQuadTable[idx & 0x0Fu];
 
 	if (step != 0) {
-		_position      += step;
-		_delta         += step;
+		_position      += step*4;
+		_delta         += step*4;
 		_encoder_changed = true;
 	}
 
@@ -287,9 +287,16 @@ void EC11RotaryEncoder::Run()
 		display_command_s d{};
 		d.timestamp = hrt_absolute_time();
 		d.numeric_value = _position;
-		d.status_color = 2;
-		sprintf(d.units,"rot");
-		sprintf(d.status_text,"A OKAY!");
+		d.status_color = 1;
+		sprintf(d.units,"RPM");
+		if(event.button_k0){
+			sprintf(d.status_text,"\\('w')/");
+			d.status_color = 3;
+			_position = 0;
+		}
+		else {
+			sprintf(d.status_text,"OKAY!");
+		}
 		_display_command_pub.publish(d);
 	}
 }

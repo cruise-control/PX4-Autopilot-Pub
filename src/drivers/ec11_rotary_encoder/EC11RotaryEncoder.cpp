@@ -283,7 +283,14 @@ void EC11RotaryEncoder::Run()
 	if (need_publish) {
 		/* Always send the accumulated position snapshot */
 		event.position = _position;
-		_pub.publish(event);
+		_rotary_encoder_event_pub.publish(event);
+		display_command_s d{};
+		d.timestamp = hrt_absolute_time();
+		d.numeric_value = _position;
+		d.status_color = 2;
+		sprintf(d.units,"rot");
+		sprintf(d.status_text,"A OKAY!");
+		_display_command_pub.publish(d);
 	}
 }
 

@@ -281,23 +281,14 @@ void EC11RotaryEncoder::Run()
 	}
 
 	if (need_publish) {
-		/* Always send the accumulated position snapshot */
+		if (event.button_k0) {
+			_position = 0;   // K0 resets the cumulative encoder position
+		}
+
+		/* Publish the raw encoder event snapshot. The display is owned by
+		 * servo_test, which decides what to render. */
 		event.position = _position;
 		_rotary_encoder_event_pub.publish(event);
-		display_command_s d{};
-		d.timestamp = hrt_absolute_time();
-		d.numeric_value = _position;
-		d.status_color = 1;
-		sprintf(d.units,"RPM");
-		if(event.button_k0){
-			sprintf(d.status_text,"\\('w')/");
-			d.status_color = 3;
-			_position = 0;
-		}
-		else {
-			sprintf(d.status_text,"OKAY!");
-		}
-		_display_command_pub.publish(d);
 	}
 }
 

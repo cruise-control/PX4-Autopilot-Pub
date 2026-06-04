@@ -1,0 +1,37 @@
+module_name: Servo Test
+serial_config: []
+
+parameters:
+  - group: Servo Test
+    definitions:
+      SVT_RPM_STEP:
+        description:
+          short: Encoder RPM step per detent
+          long: |
+            Amount the target RPM changes for each rotary-encoder detent.
+        type: int32
+        min: 1
+        max: 5000
+        default: 20
+
+      SVT_RPM_MAX:
+        description:
+          short: Maximum target RPM (full-output scale)
+          long: |
+            Upper limit of the target RPM, and the value that maps to full
+            motor output. Output value = target_rpm / SVT_RPM_MAX (open-loop).
+        type: int32
+        min: 1
+        max: 100000
+        default: 12000
+
+      SVT_NUM_MOT:
+        description:
+          short: Number of motors to drive
+          long: |
+            Motor functions MOTOR1 .. MOTOR(N) are driven with the same value
+            via the actuator_test topic.
+        type: int32
+        min: 1
+        max: 12
+        default: 1

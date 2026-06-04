@@ -18,7 +18,6 @@
 #include <px4_platform_common/module_params.h>
 #include <uORB/PublicationMulti.hpp>
 #include <uORB/topics/rotary_encoder_event.h>
-#include <uORB/topics/display_command.h>
 #include <drivers/drv_hrt.h>
 #include <lib/parameters/param.h>
 
@@ -68,7 +67,6 @@ private:
 
 	/* ----- uORB publication ----- */
 	uORB::PublicationMulti<rotary_encoder_event_s> _rotary_encoder_event_pub{ORB_ID(rotary_encoder_event)};
-	uORB::PublicationMulti<display_command_s> _display_command_pub{ORB_ID(display_command)};
 
 
 	/* ----- Encoder state (accessed from ISR context, so volatile) ----- */

@@ -51,6 +51,7 @@ using namespace time_literals;
 #define ST7789_HEIGHT      320u
 #define ST7789_STATUS_H     36u   ///< Height of status bar [pixels]
 #define ST7789_NUMERIC_Y   (ST7789_STATUS_H + 20u)
+#define ST7789_INFO_H       62u   ///< Height of bottom telemetry/info section [pixels]
 
 /* ---- ST7789 command bytes ---------------------------------------------- */
 #define ST7789_CMD_NOP       0x00
@@ -123,6 +124,7 @@ private:
 	void render_status_bar(const char *text, uint8_t color_code);
 	void render_numeric(float value, uint8_t decimal_places,
 	                    const char *units);
+	void render_info(const display_command_s &cmd);
 	void render_full(const display_command_s &cmd);
 
 	/* ----- Bitmap font helpers -------------------------------------------- */

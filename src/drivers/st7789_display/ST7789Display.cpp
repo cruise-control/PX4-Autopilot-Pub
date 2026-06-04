@@ -492,16 +492,17 @@ void ST7789Display::render_numeric(float value, uint8_t decimal_places,
 	char numbuf[24];
 	const int dp = (decimal_places > 4) ? 4 : static_cast<int>(decimal_places);
 
-	if (fabsf(value) >= 10000.0f) {
+	if (fabsf(value) >= 100000.0f) {
 		/* Scientific notation for very large numbers */
 		snprintf(numbuf, sizeof(numbuf), "%.2e", static_cast<double>(value));
 	} else {
 		snprintf(numbuf, sizeof(numbuf), "%.*f", dp, static_cast<double>(value));
 	}
 
-	/* Clear the numeric area */
+	/* Clear the numeric (setpoint) area — the band between the status bar and
+	 * the bottom telemetry section. */
 	const uint16_t num_area_y = ST7789_STATUS_H + 4u;
-	const uint16_t num_area_h = static_cast<uint16_t>(_h - num_area_y);
+	const uint16_t num_area_h = static_cast<uint16_t>(_h - ST7789_INFO_H - num_area_y);
 	fill_rect(0, num_area_y, _w, num_area_h, COLOR_BLACK);
 
 	/* Centre the large number horizontally */
@@ -528,6 +529,31 @@ void ST7789Display::render_numeric(float value, uint8_t decimal_places,
 }
 
 /* --------------------------------------------------------------------------
+ * Render the bottom telemetry / info section (three small-font lines)
+ * --------------------------------------------------------------------------*/
+void ST7789Display::render_info(const display_command_s &cmd)
+{
+	const uint16_t info_top = static_cast<uint16_t>(_h - ST7789_INFO_H);
+
+	/* Clear the section and draw a thin separator at the top of it */
+	fill_rect(0, info_top, _w, ST7789_INFO_H, COLOR_BLACK);
+	fill_rect(0, info_top, _w, 2u, COLOR_DGRAY);
+
+	const char *const lines[3] = { cmd.info_line1, cmd.info_line2, cmd.info_line3 };
+
+	for (uint8_t i = 0; i < 3u; i++) {
+		char buf[sizeof(cmd.info_line1) + 1u];
+		memcpy(buf, lines[i], sizeof(cmd.info_line1));
+		buf[sizeof(cmd.info_line1)] = '\0';
+
+		if (buf[0] != '\0') {
+			const uint16_t ly = static_cast<uint16_t>(info_top + 6u + i * 18u);
+			draw_string_small(4u, ly, buf, COLOR_LGRAY, COLOR_BLACK);
+		}
+	}
+}
+
+/* --------------------------------------------------------------------------
  * Full-screen render from a display_command message
  * --------------------------------------------------------------------------*/
 void ST7789Display::render_full(const display_command_s &cmd)
@@ -543,6 +569,7 @@ void ST7789Display::render_full(const display_command_s &cmd)
 	units[8] = '\0';
 
 	render_numeric(cmd.numeric_value, cmd.decimal_places, units);
+	render_info(cmd);
 }
 
 /* --------------------------------------------------------------------------

@@ -42,3 +42,7 @@ if param greater ST7789_GPIO_DC 0
 then
     st7789_display start
 fi
+
+# servo_test — bench motor test UI (encoder sets RPM, button enables output,
+# ESC telemetry on the display). Drives motors via actuator_test.
+servo_test start

@@ -1,0 +1,8 @@
+menuconfig MODULES_SERVO_TEST
+	bool "servo_test"
+	default n
+	---help---
+		Bench motor test driven by the EC11 rotary encoder and the ST7789
+		display: the dial sets a target RPM, the shaft button enables/disables
+		the output, and ESC telemetry is shown on screen. Drives motors via
+		the actuator_test topic (works while disarmed).

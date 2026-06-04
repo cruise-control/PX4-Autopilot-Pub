@@ -12,6 +12,11 @@ char[8] units             # Unit string e.g. "RPM\0", "m/s\0"
 char[32] status_text      # Status message (null-terminated)
 uint8    status_color     # 0=white 1=green 2=yellow 3=red
 
+# ---- Telemetry / info section (lower area, small-font lines) ----
+char[20] info_line1       # free-form text line (null-terminated)
+char[20] info_line2
+char[20] info_line3
+
 # ---- Display control ----
 bool     backlight_on     # Backlight enable
 uint8    brightness       # PWM brightness 0-100 (if BLK wired)

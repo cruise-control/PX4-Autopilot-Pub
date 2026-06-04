@@ -118,6 +118,16 @@ bool ST7789Display::init()
 	_gpio_cs   = static_cast<uint32_t>(_param_gpio_cs.get());
 	_gpio_blk  = static_cast<uint32_t>(_param_gpio_blk.get());
 
+	/* Active drawing geometry: landscape (rotate==1) swaps width/height so the
+	 * rest of the renderer addresses the panel with the correct dimensions. */
+	if (_param_rotate.get() == 1) {
+		_w = ST7789_HEIGHT;   // 320
+		_h = ST7789_WIDTH;    // 240
+	} else {
+		_w = ST7789_WIDTH;    // 240
+		_h = ST7789_HEIGHT;   // 320
+	}
+
 	/* Configure control GPIOs as outputs */
 	stm32_configgpio(_gpio_res);
 	stm32_configgpio(_gpio_dc);
@@ -144,7 +154,7 @@ bool ST7789Display::init()
 	_initialized = true;
 
 	/* Draw initial blank screen */
-	fill_rect(0, 0, ST7789_WIDTH, ST7789_HEIGHT, COLOR_BLACK);
+	fill_rect(0, 0, _w, _h, COLOR_BLACK);
 	render_status_bar("INIT", 0);
 
 	/* Subscribe and schedule */
@@ -177,9 +187,13 @@ bool ST7789Display::hw_init()
 	send_data(&colmod, 1);
 	px4_usleep(10000);
 
-	/* Memory access control – orientation */
+	/* Memory access control – orientation + colour order.
+	 * Bit layout: MY MX MV ML RGB MH . . (0x08 = BGR).
+	 *   landscape (320x240) = MV|MX = 0x60 ; portrait (240x320) = 0x00.
+	 * The BGR bit (0x08) is set because this panel wires the sub-pixels B-G-R;
+	 * leaving it clear made red/blue swap (yellow rendered red). */
 	send_cmd(ST7789_CMD_MADCTL);
-	uint8_t madctl = (_param_rotate.get() == 1) ? 0x70 : 0x00;
+	uint8_t madctl = (_param_rotate.get() == 1) ? 0x68 : 0x08;
 	send_data(&madctl, 1);
 
 	/* Porch control */
@@ -228,7 +242,10 @@ bool ST7789Display::hw_init()
 		send_data(d, sizeof(d));
 	}
 
-	send_cmd(ST7789_CMD_INVON);
+	/* This panel is non-inverting: forcing INVON made every colour come out
+	 * inverted (white text rendered black, black background rendered white /
+	 * "spurious"). Use INVOFF so the RGB565 values map straight through. */
+	send_cmd(ST7789_CMD_INVOFF);
 	send_cmd(ST7789_CMD_NORON);
 	px4_usleep(10000);
 
@@ -320,15 +337,22 @@ void ST7789Display::fill_rect(uint16_t x, uint16_t y,
 
 	/* Send pixel data — use a small line-buffer to minimise SPI overhead */
 	const uint32_t pixels = static_cast<uint32_t>(w) * h;
-	static uint8_t linebuf[ST7789_WIDTH * 2];  // 480 bytes – fits on stack-ish
+	/* Sized for the longest line = 320 px (landscape width) → 640 bytes */
+	static uint8_t linebuf[ST7789_HEIGHT * 2];
 
-	const uint16_t lw = (w <= ST7789_WIDTH) ? w : ST7789_WIDTH;
+	const uint16_t lw = (w <= ST7789_HEIGHT) ? w : ST7789_HEIGHT;
 	for (uint16_t i = 0; i < lw; i++) {
 		linebuf[i * 2u]     = static_cast<uint8_t>(color >> 8);
 		linebuf[i * 2u + 1u] = static_cast<uint8_t>(color & 0xFF);
 	}
 
+	/* set_window() ends each command/data phase by raising CS, so CS is HIGH
+	 * here. The bulk pixel write below uses raw SPI_SNDBLOCK and does NOT toggle
+	 * CS itself, so it must be re-asserted — otherwise the fill is clocked out
+	 * while the panel is deselected and silently dropped, leaving the screen
+	 * full of un-cleared RAM (and status/numeric boxes never erased). */
 	stm32_gpiowrite(_gpio_dc, true);
+	stm32_gpiowrite(_gpio_cs, false);
 
 	for (uint32_t p = 0; p < pixels; p += lw) {
 		const uint32_t chunk = ((p + lw) <= pixels) ? lw : (pixels - p);
@@ -434,12 +458,12 @@ void ST7789Display::render_status_bar(const char *text, uint8_t color_code)
 	default: bg = COLOR_BLUE;   break;
 	}
 
-	fill_rect(0, 0, ST7789_WIDTH, ST7789_STATUS_H, bg);
+	fill_rect(0, 0, _w, ST7789_STATUS_H, bg);
 
 	/* Centred status text using small font */
 	const size_t  len   = strnlen(text, 31);
 	const uint16_t tw   = static_cast<uint16_t>(len * kFont8x16GlyphW);
-	const uint16_t tx   = (ST7789_WIDTH  > tw) ? ((ST7789_WIDTH - tw) / 2u) : 0u;
+	const uint16_t tx   = (_w  > tw) ? ((_w - tw) / 2u) : 0u;
 	const uint16_t ty   = (ST7789_STATUS_H > kFont8x16GlyphH)
 	                          ? ((ST7789_STATUS_H - kFont8x16GlyphH) / 2u) : 0u;
 
@@ -465,12 +489,12 @@ void ST7789Display::render_numeric(float value, uint8_t decimal_places,
 
 	/* Clear the numeric area */
 	const uint16_t num_area_y = ST7789_STATUS_H + 4u;
-	const uint16_t num_area_h = static_cast<uint16_t>(ST7789_HEIGHT - num_area_y);
-	fill_rect(0, num_area_y, ST7789_WIDTH, num_area_h, COLOR_BLACK);
+	const uint16_t num_area_h = static_cast<uint16_t>(_h - num_area_y);
+	fill_rect(0, num_area_y, _w, num_area_h, COLOR_BLACK);
 
 	/* Centre the large number horizontally */
 	const uint16_t nw = string_pixel_width_large(numbuf);
-	const uint16_t nx = (ST7789_WIDTH > nw) ? ((ST7789_WIDTH - nw) / 2u) : 0u;
+	const uint16_t nx = (_w > nw) ? ((_w - nw) / 2u) : 0u;
 
 	/* Vertically centre in the lower two-thirds of the screen */
 	const uint16_t total_h = static_cast<uint16_t>(kFontLargeGlyphH +
@@ -486,7 +510,7 @@ void ST7789Display::render_numeric(float value, uint8_t decimal_places,
 		const uint16_t uy  = static_cast<uint16_t>(ny + kFontLargeGlyphH + 6u);
 		const size_t   ul  = strnlen(units, 7);
 		const uint16_t uw  = static_cast<uint16_t>(ul * kFont8x16GlyphW);
-		const uint16_t ux  = (ST7789_WIDTH > uw) ? ((ST7789_WIDTH - uw) / 2u) : 0u;
+		const uint16_t ux  = (_w > uw) ? ((_w - uw) / 2u) : 0u;
 		draw_string_small(ux, uy, units, COLOR_LGRAY, COLOR_BLACK);
 	}
 }
@@ -497,7 +521,7 @@ void ST7789Display::render_numeric(float value, uint8_t decimal_places,
 void ST7789Display::render_full(const display_command_s &cmd)
 {
 	if (cmd.clear_display) {
-		fill_rect(0, 0, ST7789_WIDTH, ST7789_HEIGHT, COLOR_BLACK);
+		fill_rect(0, 0, _w, _h, COLOR_BLACK);
 	}
 
 	render_status_bar(cmd.status_text, cmd.status_color);

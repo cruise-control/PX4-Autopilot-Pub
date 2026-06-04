@@ -57,6 +57,7 @@ using namespace time_literals;
 #define ST7789_CMD_SWRESET   0x01
 #define ST7789_CMD_SLPOUT    0x11
 #define ST7789_CMD_NORON     0x13
+#define ST7789_CMD_INVOFF    0x20
 #define ST7789_CMD_INVON     0x21
 #define ST7789_CMD_DISPON    0x29
 #define ST7789_CMD_CASET     0x2A
@@ -139,6 +140,10 @@ private:
 	struct spi_dev_s *_spi{nullptr};
 	uint32_t          _spi_bus{1};
 	uint32_t          _spi_freq{40000000};  ///< 40 MHz – ST7789 max
+
+	/* ----- Active drawing geometry (swapped in landscape) ----------------- */
+	uint16_t _w{ST7789_WIDTH};
+	uint16_t _h{ST7789_HEIGHT};
 
 	/* ----- GPIO config words (set from params) ----------------------------- */
 	uint32_t _gpio_res{0};

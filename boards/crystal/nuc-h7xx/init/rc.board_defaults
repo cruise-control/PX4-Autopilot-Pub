@@ -35,6 +35,7 @@ param set-default ST7789_GPIO_CS  264510  # D10/PD14 0x0004093E (output, idle hi
 param set-default ST7789_GPIO_DC  264255  # D9/PD15  0x0004083F
 param set-default ST7789_GPIO_RES 264275  # D8/PF3   0x00040853
 param set-default ST7789_GPIO_BLK 264300  # D7/PG12  0x0004086C
+param set-default ST7789_ROTATE   1        # 1 = landscape (320x240)
 
 # ST7789 SPI display — start only when DC GPIO has been configured.
 if param greater ST7789_GPIO_DC 0

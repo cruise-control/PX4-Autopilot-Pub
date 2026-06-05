@@ -5,14 +5,26 @@
 # USART3 (ST-LINK VCP, /dev/ttyS2) is the NuttX system console.
 # USB CDC-ACM (/dev/ttyACM0) is started by SYSTEM_CDCACM and carries MAVLink.
 
-# Turn off the Telemetry for dshot
-param set-default DSHOT_TEL_CFG 0
+# Turn on the Telemetry for dshot
+param set-default DSHOT_TEL_CFG 1
+
+param set PWM_MAIN_FUNC1 101
+param set PWM_MAIN_FUNC2 102
+param set PWM_MAIN_FUNC3 103
+param set PWM_MAIN_FUNC4 104
+param set PWM_MAIN_FUNC5 105
+param set PWM_MAIN_FUNC6 106
+param set PWM_MAIN_FUNC7 107
+param set PWM_MAIN_FUNC8 108
+
 
 # Run the TIM1 output group (outputs 1-4, PE9/PE11/PE13/PE14) as DShot300.
 # Requires the per-timer burst DMA configured in src/timer_config.cpp.
 # Set PWM_MAIN_TIM1 (TIM4, outputs 5-6) / PWM_MAIN_TIM2 (TIM2, outputs 7-8)
 # the same way to run those groups as DShot too; they stay PWM by default.
 param set-default PWM_MAIN_TIM0 -4
+param set-default PWM_MAIN_TIM1 -4
+param set-default PWM_MAIN_TIM2 -4
 
 # EC11 rotary encoder pin map (STM32 GPIO config words, see src/board_config.h)
 # All on the Arduino analog header; distinct pin numbers -> distinct EXTI lines.

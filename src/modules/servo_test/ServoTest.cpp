@@ -46,8 +46,14 @@ void ServoTest::Run()
 
 	/* ---- Encoder input (drain all pending events) ---- */
 	rotary_encoder_event_s enc;
+	bool ui_dirty = false;
+	bool new_esc = false;
 
 	while (_encoder_sub.update(&enc)) {
+		/* The encoder driver only publishes on an actual change, so any event
+		 * received here is a dial/button action and warrants a redraw. */
+		ui_dirty = true;
+
 		if (enc.delta != 0) {
 			_target_rpm = clampf(_target_rpm + static_cast<float>(enc.delta) * step, 0.0f, rpm_max);
 		}
@@ -78,11 +84,12 @@ void ServoTest::Run()
 	}
 
 	/* ---- ESC telemetry ---- */
-	esc_status_s esc;
+	esc_status_s esc{0};
 
 	if (_esc_status_sub.update(&esc)) {
 		_esc      = esc;
 		_esc_time = now;
+		new_esc = true;
 	}
 
 	/* ---- Output ---- */
@@ -91,9 +98,12 @@ void ServoTest::Run()
 		publish_motors(value);
 	}
 
-	/* ---- Display (rate-limited to ~10 Hz; the panel refreshes at 30 Hz) ---- */
-	if (now - _last_display > 100_ms) {
-		_last_display = now;
+	/* ---- Display: only redraw on a button/encoder action (plus once at
+	 * startup). Motor control above still runs every cycle; only the screen is
+	 * gated, so ESC telemetry refreshes on dial/button activity rather than
+	 * continuously. ---- */
+	if (ui_dirty || _first_publish || new_esc) {
+		_first_publish = false;
 		publish_display();
 	}
 }
@@ -157,7 +167,7 @@ void ServoTest::publish_display()
 		snprintf(d.info_line2, sizeof(d.info_line2), "%.1fV  %.1fA",
 		         static_cast<double>(e.esc_voltage), static_cast<double>(e.esc_current));
 		snprintf(d.info_line3, sizeof(d.info_line3), "%dC  PWR %d%%",
-		         static_cast<int>(e.esc_temperature), static_cast<int>(e.esc_power));
+		         static_cast<int>(e.esc_temperature - 32.f * 5/9), static_cast<int>(e.esc_power));
 
 	} else {
 		strncpy(d.info_line1, "ESC: no telemetry", sizeof(d.info_line1));

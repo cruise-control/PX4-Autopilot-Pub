@@ -61,7 +61,7 @@ private:
 
 	float       _target_rpm{0.0f};
 	hrt_abstime _last_toggle{0};
-	hrt_abstime _last_display{0};
+	bool        _first_publish{true};   ///< force one draw on startup
 
 	/* Cached ESC telemetry */
 	esc_status_s _esc{};

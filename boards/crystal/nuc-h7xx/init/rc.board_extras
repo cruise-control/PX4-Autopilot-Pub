@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+
+uavan stop
+
+
+# DroneCAN (FDCAN1 on PD0/PD1). UAVCAN_ENABLE=3 also starts the dynamic node-ID
+# allocation + firmware servers, which need a writable filesystem at the PX4 root
+# path (CONFIG_BOARD_ROOT_PATH = /fs/microsd). This board has no SD card, so back
+# it with a small RAM disk (tmpfs). Volatile: the node-ID allocation table resets
+# on every reboot (dynamic nodes get re-allocated at boot — fine for bench use).
+# Runs before 'uavcan start' (rcS sources this script earlier).
+mount -t tmpfs /fs/microsd
+
+sleep 5
+
+
+uavcan start

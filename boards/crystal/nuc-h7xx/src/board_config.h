@@ -164,11 +164,15 @@
 
 #define BOARD_HAS_ON_RESET 1
 
+#define UAVCAN_NUM_IFACES_RUNTIME 1
+
 /* GPIO init list *********************************************************************************/
 /* Initialise VBUS sense pin at startup; LEDs are handled by led_init(). */
 
 #define PX4_GPIO_INIT_LIST { \
 		GPIO_OTGFS_VBUS, \
+		GPIO_CAN1_TX, \
+		GPIO_CAN1_RX, \
 	}
 
 __BEGIN_DECLS

@@ -40,6 +40,22 @@ param set-default PWM_MAIN_TIM0 -4
 param set-default PWM_MAIN_TIM1 -4
 param set-default PWM_MAIN_TIM2 -4
 
+# Bidirectional DShot — eRPM feedback over the signal wire (no extra serial wire).
+# The board already supports this: timer_config.cpp gives TIM1 a DMA1 stream, which
+# initIOTimer populates as BOTH the burst (dma_map_up) and the per-channel capture
+# (dma_map_ch[0..3]) maps the H7 bdshot driver needs (DMA2 is the display SPI, so no
+# contention). The ESC must also have bidirectional DShot enabled (AM32/BLHeli32).
+#
+# LIMITATION: the H7 driver hardcodes bidir to ONE timer group (index 0 = TIM1,
+# outputs 1-4). With bidir on, outputs 5-8 (TIM4/TIM2) are NOT driven — only 1-4
+# work. Fine for the servo_test bench (motor 1 = output 1). Reboot required.
+param set-default DSHOT_BIDIR_EN 1
+
+# Motor magnetic pole count — converts captured eRPM to mechanical RPM
+# (rpm = erpm / (poles/2)). Set to YOUR motor's pole count; 14 is typical for a
+# 5-inch-prop motor. Wrong value only scales the reported RPM, not the drive.
+param set-default MOT_POLE_COUNT 14
+
 # EC11 rotary encoder pin map (STM32 GPIO config words, see src/board_config.h)
 # All on the Arduino analog header; distinct pin numbers -> distinct EXTI lines.
 #   A=A0/PA3  B=A1/PC0  PUSH=A3/PB1  K0=A4/PC2  (input, pull-up, EXTI)

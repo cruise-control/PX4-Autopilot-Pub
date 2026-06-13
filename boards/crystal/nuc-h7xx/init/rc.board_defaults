@@ -32,13 +32,54 @@ param set UAVCAN_EC_FUNC6 106
 param set UAVCAN_EC_FUNC7 107
 param set UAVCAN_EC_FUNC8 108
 
-# Run the TIM1 output group (outputs 1-4, PE9/PE11/PE13/PE14) as DShot300.
-# Requires the per-timer burst DMA configured in src/timer_config.cpp.
-# Set PWM_MAIN_TIM1 (TIM4, outputs 5-6) / PWM_MAIN_TIM2 (TIM2, outputs 7-8)
-# the same way to run those groups as DShot too; they stay PWM by default.
-param set-default PWM_MAIN_TIM0 -4
-param set-default PWM_MAIN_TIM1 -4
-param set-default PWM_MAIN_TIM2 -4
+
+# Run all three timer groups as standard 50 Hz PWM (20 ms period).
+# PWM_MAIN_TIM value is the output frequency in Hz; positive = PWM, negative = DShot.
+param set-default PWM_MAIN_TIM0 50
+param set-default PWM_MAIN_TIM1 50
+param set-default PWM_MAIN_TIM2 50
+
+# Standard PWM pulse widths in microseconds, tuned to AM32 default thresholds:
+#   servo_low_threshold  = 1100 µs — below this AM32 outputs zero (no thrust)
+#   servo_high_threshold = 1900 µs — above this AM32 saturates at maximum
+# MIN matches the low threshold so the FC's zero-throttle maps to the actual
+# spin-up point. DIS/FAIL sit 100 µs below that threshold so the ESC reads
+# zero and will not arm.
+param set-default PWM_MAIN_MIN1 1100
+param set-default PWM_MAIN_MIN2 1100
+param set-default PWM_MAIN_MIN3 1100
+param set-default PWM_MAIN_MIN4 1100
+param set-default PWM_MAIN_MIN5 1100
+param set-default PWM_MAIN_MIN6 1100
+param set-default PWM_MAIN_MIN7 1100
+param set-default PWM_MAIN_MIN8 1100
+
+param set-default PWM_MAIN_MAX1 1900
+param set-default PWM_MAIN_MAX2 1900
+param set-default PWM_MAIN_MAX3 1900
+param set-default PWM_MAIN_MAX4 1900
+param set-default PWM_MAIN_MAX5 1900
+param set-default PWM_MAIN_MAX6 1900
+param set-default PWM_MAIN_MAX7 1900
+param set-default PWM_MAIN_MAX8 1900
+
+param set-default PWM_MAIN_DIS1 1000
+param set-default PWM_MAIN_DIS2 1000
+param set-default PWM_MAIN_DIS3 1000
+param set-default PWM_MAIN_DIS4 1000
+param set-default PWM_MAIN_DIS5 1000
+param set-default PWM_MAIN_DIS6 1000
+param set-default PWM_MAIN_DIS7 1000
+param set-default PWM_MAIN_DIS8 1000
+
+param set-default PWM_MAIN_FAIL1 1000
+param set-default PWM_MAIN_FAIL2 1000
+param set-default PWM_MAIN_FAIL3 1000
+param set-default PWM_MAIN_FAIL4 1000
+param set-default PWM_MAIN_FAIL5 1000
+param set-default PWM_MAIN_FAIL6 1000
+param set-default PWM_MAIN_FAIL7 1000
+param set-default PWM_MAIN_FAIL8 1000
 
 # Bidirectional DShot — eRPM feedback over the signal wire (no extra serial wire).
 # The board already supports this: timer_config.cpp gives TIM1 a DMA1 stream, which
@@ -49,12 +90,11 @@ param set-default PWM_MAIN_TIM2 -4
 # LIMITATION: the H7 driver hardcodes bidir to ONE timer group (index 0 = TIM1,
 # outputs 1-4). With bidir on, outputs 5-8 (TIM4/TIM2) are NOT driven — only 1-4
 # work. Fine for the servo_test bench (motor 1 = output 1). Reboot required.
-param set-default DSHOT_BIDIR_EN 1
+param set-default DSHOT_BIDIR_EN 0
 
 # Motor magnetic pole count — converts captured eRPM to mechanical RPM
-# (rpm = erpm / (poles/2)). Set to YOUR motor's pole count; 14 is typical for a
-# 5-inch-prop motor. Wrong value only scales the reported RPM, not the drive.
-param set-default MOT_POLE_COUNT 14
+# (rpm = erpm / (poles/2)). HGLRC SPECTER 1303.5 5500KV is 9N12P → 12 poles.
+param set-default MOT_POLE_COUNT 12
 
 # EC11 rotary encoder pin map (STM32 GPIO config words, see src/board_config.h)
 # All on the Arduino analog header; distinct pin numbers -> distinct EXTI lines.
@@ -84,6 +124,9 @@ if param greater ST7789_GPIO_DC 0
 then
     st7789_display start
 fi
+
+# Drive all 8 motor channels by default
+param set-default SVT_NUM_MOT 8
 
 # servo_test — bench motor test UI (encoder sets RPM, button enables output,
 # ESC telemetry on the display). Drives motors via actuator_test.

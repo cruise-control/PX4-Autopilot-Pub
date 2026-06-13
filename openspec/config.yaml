@@ -1,0 +1,78 @@
+schema: spec-driven
+
+context: |
+  ## Project: PX4-Autopilot-Pub — Crystal NUC-H7xx board target
+
+  A PX4 Autopilot firmware fork targeting the ST Nucleo-H753ZI (STM32H753ZI,
+  Cortex-M7 @ 480 MHz, 8 MHz HSE). The primary use-case is a bench ESC tester
+  and motor-control research platform, not a flight controller in normal use.
+
+  ### Build target
+  - Board: crystal/nuc-h7xx  (`make crystal_nuc-h7xx_default`)
+  - Working branch: feat-crystal-nuc
+  - Board ID: 210
+
+  ### Tech stack
+  - Language: C/C++ (PX4 / NuttX conventions), Python (build tooling), Bash (rcS scripts)
+  - RTOS: NuttX
+  - Build system: CMake + Kconfig (.px4board)
+  - Comms: MAVLink over USB CDC-ACM (/dev/ttyACM0); uXRCE-DDS; UAVCAN/DroneCAN (CAN1)
+  - Commits: Conventional Commits (feat/fix/chore/docs/refactor)
+
+  ### Hardware peripherals (Nucleo-H753ZI)
+  - 8 PWM/DShot outputs across three timers:
+      TIM1 ch1-4 → PE9/PE11/PE13/PE14 (Arduino D6/D5/D3/D4) — outputs 1-4
+      TIM4 ch1-2 → PB6/PB7 (Arduino D1/D0) — outputs 5-6
+      TIM2 ch3-4 → PB10/PB11 (ST Zio CN10 pins 32/34) — outputs 7-8
+  - ESC: 
+      SEQURE Blueson A2 4-in-1 (AM32 firmware, AT32F421 MCU, signal input PB4 = 5V-tolerant FT pin)
+      MTOW ESC (AM32 firmware, G431 MCU)
+      MTOW ESC 4-in-1 (AM32 firmware, G431 MCU, 4 signal inputs)
+      MTOW ESC CAN (AM32 firmware, G431 MCU, UAVCAN Interface)
+  - Motor: 
+      Test motor is HGLRC SPECTER 1303.5 5500KV, 9N12P (12 poles)
+      Not specific to any motor
+  - PWM mode: 50 Hz to 400 Hz, 1100–1900 µs throttle range (AM32 servo_low/high_threshold defaults)
+  - DShot mode: DShot150 DShot300 DShot600, bidir DShot supported on TIM1 group only
+  - DShot ESC telemetry: USART6 RX PC7 (TELEM2, /dev/ttyS2)
+  - ST7789 SPI display 320×240 on SPI1 (PA5/PA6/PB5), DC/CS/RES/BLK on Arduino digital header
+  - EC11 rotary encoder on Arduino analog header (PA3/PC0/PB1/PC2)
+  - UAVCAN/DroneCAN on CAN1 (NODE_ID 1, 1 Mbit/s)
+  - USB CDC-ACM: /dev/ttyACM0 (MAVLink)
+  - ST-LINK VCP: /dev/ttyS1 (NuttX system console)
+
+  ### Custom modules (src/modules/)
+  - servo_test: Bench motor-test UI — encoder sets RPM target, button arms output,
+    ESC telemetry displayed on ST7789. Drives motors via actuator_test uORB topic.
+    Runs at 50 Hz. Entry point: `servo_test start` in rc.board_defaults.
+  - ec11_rotary_enocder: Rotary encoder support, button handling
+  - st7789_display: Custom SPI display handler, optimized for DMA burst writing,
+    subscribes to a display topic and render on the display
+
+  ### Key params set in boards/crystal/nuc-h7xx/init/rc.board_defaults
+  - UAVCAN_ENABLE 3 (full DroneCAN)
+  - DSHOT_TEL_CFG 102 (TELEM2)
+  - PWM_MAIN_FUNC1-8: Motor1-8 (101-108)
+  - UAVCAN_EC_FUNC1-8: Motor1-8 (101-108)
+  - PWM_MAIN_TIM0/1/2: output protocol (-4=DShot300, -5=DShot150, -3=DShot600, 50=50Hz PWM, 400=400Hz PWM)
+  - PWM_MAIN_MIN/MAX/DIS/FAIL per channel (changes depending on dshot or pwm output)
+  - DSHOT_BIDIR_EN 0/1
+  - SVT_NUM_MOT 8
+
+  ### PX4 module conventions
+  - Modules live in src/modules/ or src/drivers/
+  - Module entry declared via CMakeLists.txt + Kconfig + module.yaml
+  - Parameters declared in module.yaml; accessed via ModuleParams / DEFINE_PARAMETERS
+  - uORB pub/sub for inter-module communication
+  - ScheduledWorkItem (px4::WorkItem) for periodic tasks
+  - NuttX shell commands registered with PRINT_MODULE_USAGE / MODULE_COMMAND_RUN
+
+rules:
+  proposal:
+    - Keep proposals under 400 words
+    - Always include a "Non-goals" section
+    - Note which hardware peripheral or module is affected
+  tasks:
+    - Break tasks into chunks completable in under 90 minutes
+    - Reference specific file paths where known (e.g. src/modules/servo_test/ServoTest.cpp)
+    - Flag any param changes needed in rc.board_defaults

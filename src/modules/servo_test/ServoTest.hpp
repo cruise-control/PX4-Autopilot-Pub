@@ -102,7 +102,8 @@ private:
 	hrt_abstime _k0_hold_start{0};
 	bool        _k0_held{false};
 	float       _hold_progress{0.0f};
-	bool        _push_pending{false};
+	bool        _push_pending{false};   // CONFIG: set on press, start fires on release
+	bool        _run_push_held{false};  // RUNNING: encoder gated while stop button is held
 
 	// ── Timing ────────────────────────────────────────────────────────────
 	hrt_abstime _last_run{0};

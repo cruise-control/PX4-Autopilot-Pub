@@ -149,13 +149,18 @@ void ServoTest::Run()
 			break;
 
 		case State::RUNNING:
-			if (enc.delta != 0) {
+			if (enc.delta != 0 && !_run_push_held) {
 				_target_throttle = clampf(_target_throttle + static_cast<float>(enc.delta) * _param_thr_step.get(), 0.0f, 1.0f);
 			}
 
-			// PUSH → graceful stop
+			// PUSH → graceful stop; gate encoder until release
 			if (enc.push_rising) {
+				_run_push_held = true;
 				stop_running(/*immediate=*/false);
+			}
+
+			if (enc.push_falling) {
+				_run_push_held = false;
 			}
 
 			// K0 → immediate e-stop
@@ -257,7 +262,6 @@ void ServoTest::Run()
 			_output_throttle = _ramp_filter.update(0.0f, dt);
 
 			if (_output_throttle < 0.01f) {
-				_target_throttle = 0.0f;
 				_output_throttle = 0.0f;
 				release_outputs();
 				_state      = State::CONFIG;
@@ -379,53 +383,52 @@ void ServoTest::apply_group_mode(int group, int mode)
 		param_set(p, &tim_val);
 	}
 
-	// Auto-fill channel min/max/dis/fail based on protocol
 	int first, last;
 	group_channels(group, first, last);
 
-	int32_t min_v, max_v, dis_v, fail_v;
-
-	if (mode_is_dshot(mode)) {
-		min_v = 0; max_v = 1999; dis_v = 0; fail_v = 0;
-
-	} else if (mode_is_pwm(mode)) {
-		min_v = 1100; max_v = 1900; dis_v = 1100; fail_v = 1100;
-
-	} else {
-		// disabled — skip channel param update
-		// Update the SVT group param to reflect the new mode
-		const char *svt_params[] = { "SVT_GRP_A_MODE", "SVT_GRP_B_MODE", "SVT_GRP_C_MODE" };
-		int32_t m = mode;
-		p = param_find(svt_params[group]);
-		if (p != PARAM_INVALID) { param_set(p, &m); }
-		return;
-	}
-
 	char name[20];
 
+	// Set output function for each channel: Motor{ch} if active, 0 if disabled
 	for (int ch = first; ch <= last; ch++) {
-		snprintf(name, sizeof(name), "PWM_MAIN_MIN%d", ch);
+		int32_t func_v = (mode != 0) ? (100 + ch) : 0;
+		snprintf(name, sizeof(name), "PWM_MAIN_FUNC%d", ch);
 		p = param_find(name);
-		if (p != PARAM_INVALID) { param_set(p, &min_v); }
+		if (p != PARAM_INVALID) { param_set(p, &func_v); }
+	}
 
-		snprintf(name, sizeof(name), "PWM_MAIN_MAX%d", ch);
-		p = param_find(name);
-		if (p != PARAM_INVALID) { param_set(p, &max_v); }
+	// Auto-fill channel min/max/dis/fail for active protocols
+	if (mode_is_dshot(mode) || mode_is_pwm(mode)) {
+		int32_t min_v, max_v, dis_v, fail_v;
 
-		snprintf(name, sizeof(name), "PWM_MAIN_DIS%d", ch);
-		p = param_find(name);
-		if (p != PARAM_INVALID) { param_set(p, &dis_v); }
+		if (mode_is_dshot(mode)) {
+			min_v = 0; max_v = 1999; dis_v = 0; fail_v = 0;
+		} else {
+			min_v = 1100; max_v = 1900; dis_v = 1100; fail_v = 1100;
+		}
 
-		snprintf(name, sizeof(name), "PWM_MAIN_FAIL%d", ch);
-		p = param_find(name);
-		if (p != PARAM_INVALID) { param_set(p, &fail_v); }
+		for (int ch = first; ch <= last; ch++) {
+			snprintf(name, sizeof(name), "PWM_MAIN_MIN%d", ch);
+			p = param_find(name);
+			if (p != PARAM_INVALID) { param_set(p, &min_v); }
+
+			snprintf(name, sizeof(name), "PWM_MAIN_MAX%d", ch);
+			p = param_find(name);
+			if (p != PARAM_INVALID) { param_set(p, &max_v); }
+
+			snprintf(name, sizeof(name), "PWM_MAIN_DIS%d", ch);
+			p = param_find(name);
+			if (p != PARAM_INVALID) { param_set(p, &dis_v); }
+
+			snprintf(name, sizeof(name), "PWM_MAIN_FAIL%d", ch);
+			p = param_find(name);
+			if (p != PARAM_INVALID) { param_set(p, &fail_v); }
+		}
 	}
 
 	// Update the SVT group param so it persists
 	const char *svt_params[] = { "SVT_GRP_A_MODE", "SVT_GRP_B_MODE", "SVT_GRP_C_MODE" };
 	int32_t m = mode;
 	p = param_find(svt_params[group]);
-
 	if (p != PARAM_INVALID) { param_set(p, &m); }
 
 	updateParams();
@@ -449,6 +452,7 @@ void ServoTest::stop_running(bool immediate)
 		release_outputs();
 		_target_throttle = 0.0f;
 		_output_throttle = 0.0f;
+		_run_push_held   = false;
 		_ramp_state      = RampState::IDLE;
 		_state           = State::CONFIG;
 
@@ -474,7 +478,7 @@ void ServoTest::exit_setup(bool commit)
 	_menu_delta_acc = 0;
 
 	if (commit && _setup_page == SetupPage::UAVCAN_PAGE) {
-		bool en = _pending_uavcan;
+		int32_t en = _pending_uavcan ? 1 : 0;
 		param_t p = param_find("SVT_UAVCAN_EN");
 
 		if (p != PARAM_INVALID) { param_set(p, &en); }

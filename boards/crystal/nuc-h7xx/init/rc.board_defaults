@@ -14,37 +14,37 @@ param set-default UAVCAN_ENABLE 3
 # runs "dshot telemetry -d /dev/ttyS2", so ESC telemetry starts on boot.
 param set-default DSHOT_TEL_CFG 102
 
-param set PWM_MAIN_FUNC1 101
-param set PWM_MAIN_FUNC2 102
-param set PWM_MAIN_FUNC3 103
-param set PWM_MAIN_FUNC4 104
-param set PWM_MAIN_FUNC5 105
-param set PWM_MAIN_FUNC6 106
-param set PWM_MAIN_FUNC7 107
-param set PWM_MAIN_FUNC8 108
+param set-default PWM_MAIN_FUNC1 101
+param set-default PWM_MAIN_FUNC2 102
+param set-default PWM_MAIN_FUNC3 103
+param set-default PWM_MAIN_FUNC4 104
+param set-default PWM_MAIN_FUNC5 105
+param set-default PWM_MAIN_FUNC6 106
+param set-default PWM_MAIN_FUNC7 107
+param set-default PWM_MAIN_FUNC8 108
 
-param set UAVCAN_EC_FUNC1 101
-param set UAVCAN_EC_FUNC2 102
-param set UAVCAN_EC_FUNC3 103
-param set UAVCAN_EC_FUNC4 104
-param set UAVCAN_EC_FUNC5 105
-param set UAVCAN_EC_FUNC6 106
-param set UAVCAN_EC_FUNC7 107
-param set UAVCAN_EC_FUNC8 108
+param set-default UAVCAN_EC_FUNC1 101
+param set-default UAVCAN_EC_FUNC2 102
+param set-default UAVCAN_EC_FUNC3 103
+param set-default UAVCAN_EC_FUNC4 104
+param set-default UAVCAN_EC_FUNC5 105
+param set-default UAVCAN_EC_FUNC6 106
+param set-default UAVCAN_EC_FUNC7 107
+param set-default UAVCAN_EC_FUNC8 108
 
 
-# Run all three timer groups as standard 50 Hz PWM (20 ms period).
-# PWM_MAIN_TIM value is the output frequency in Hz; positive = PWM, negative = DShot.
+# Timer group protocol defaults: PWM 50Hz on first boot.
+# param set-default means flash values take precedence — if the operator committed
+# a different protocol via SETUP, that value persists across reboots.
 param set-default PWM_MAIN_TIM0 50
 param set-default PWM_MAIN_TIM1 50
 param set-default PWM_MAIN_TIM2 50
 
-# Standard PWM pulse widths in microseconds, tuned to AM32 default thresholds:
+# PWM pulse width defaults in microseconds, tuned to AM32 default thresholds:
 #   servo_low_threshold  = 1100 µs — below this AM32 outputs zero (no thrust)
 #   servo_high_threshold = 1900 µs — above this AM32 saturates at maximum
-# MIN matches the low threshold so the FC's zero-throttle maps to the actual
-# spin-up point. DIS/FAIL sit 100 µs below that threshold so the ESC reads
-# zero and will not arm.
+# param set-default means flash values take precedence — operator-saved limits
+# (e.g. from a prior SETUP commit) survive reboots.
 param set-default PWM_MAIN_MIN1 1100
 param set-default PWM_MAIN_MIN2 1100
 param set-default PWM_MAIN_MIN3 1100
@@ -131,13 +131,15 @@ fi
 #   -X = external I2C, -b = bus number (1 = I2C1/Arduino header), -k = keep running if unplugged.
 ina238 start -X -b 1 -a 0x45 -k
 
-# servo_test group protocol defaults (set before servo_test starts).
-#   SVT_GRP_A_MODE: Group A (ch1-4/TIM1) — 2=DShot300, 0=disabled
-#   SVT_GRP_B/C_MODE: Groups B/C — 0=disabled by default
+# servo_test group protocol defaults — PWM 50Hz (mode=4) on first boot.
+# param set-default means flash values take precedence — if a prior SETUP commit
+# wrote a different mode, the UI will show that mode on reboot, consistent with
+# the actual hardware state.
+# SVT_THR_STEP, SVT_UAVCAN_EN, SVT_RAMP_EN, SVT_RAMP_TAU are session-persistent defaults.
 param set-default SVT_THR_STEP   0.000625
-param set-default SVT_GRP_A_MODE 2
-param set-default SVT_GRP_B_MODE 0
-param set-default SVT_GRP_C_MODE 0
+param set-default SVT_GRP_A_MODE 4
+param set-default SVT_GRP_B_MODE 4
+param set-default SVT_GRP_C_MODE 4
 param set-default SVT_UAVCAN_EN  0
 param set-default SVT_RAMP_EN    1
 param set-default SVT_RAMP_TAU   0.5

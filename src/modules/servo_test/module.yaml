@@ -4,34 +4,119 @@ serial_config: []
 parameters:
   - group: Servo Test
     definitions:
-      SVT_RPM_STEP:
+      SVT_GRP_A_MODE:
         description:
-          short: Encoder RPM step per detent
+          short: Output protocol for Group A (channels 1-4, TIM1)
           long: |
-            Amount the target RPM changes for each rotary-encoder detent.
+            Selects the output protocol for timer group A (channels 1-4 on TIM1).
+            0=disabled, 1=DShot150, 2=DShot300, 3=DShot600,
+            4=PWM 50Hz, 5=PWM 100Hz, 6=PWM 200Hz, 7=PWM 400Hz.
+            Changing this in SETUP writes PWM_MAIN_TIM0 and sets
+            per-channel min/max/fail/disabled to protocol defaults.
         type: int32
-        min: 1
-        max: 5000
-        default: 20
+        min: 0
+        max: 7
+        default: 2
+        values:
+          0: Disabled
+          1: DShot150
+          2: DShot300
+          3: DShot600
+          4: PWM 50Hz
+          5: PWM 100Hz
+          6: PWM 200Hz
+          7: PWM 400Hz
 
-      SVT_RPM_MAX:
+      SVT_GRP_B_MODE:
         description:
-          short: Maximum target RPM (full-output scale)
+          short: Output protocol for Group B (channels 5-6, TIM4)
           long: |
-            Upper limit of the target RPM, and the value that maps to full
-            motor output. Output value = target_rpm / SVT_RPM_MAX (open-loop).
+            Selects the output protocol for timer group B (channels 5-6 on TIM4).
+            Same enum as SVT_GRP_A_MODE. Independent of Group A.
         type: int32
-        min: 1
-        max: 100000
-        default: 12000
+        min: 0
+        max: 7
+        default: 0
+        values:
+          0: Disabled
+          1: DShot150
+          2: DShot300
+          3: DShot600
+          4: PWM 50Hz
+          5: PWM 100Hz
+          6: PWM 200Hz
+          7: PWM 400Hz
 
-      SVT_NUM_MOT:
+      SVT_GRP_C_MODE:
         description:
-          short: Number of motors to drive
+          short: Output protocol for Group C (channels 7-8, TIM2)
           long: |
-            Motor functions MOTOR1 .. MOTOR(N) are driven with the same value
-            via the actuator_test topic.
+            Selects the output protocol for timer group C (channels 7-8 on TIM2).
+            Same enum as SVT_GRP_A_MODE. Independent of Groups A and B.
         type: int32
-        min: 1
-        max: 12
+        min: 0
+        max: 7
+        default: 0
+        values:
+          0: Disabled
+          1: DShot150
+          2: DShot300
+          3: DShot600
+          4: PWM 50Hz
+          5: PWM 100Hz
+          6: PWM 200Hz
+          7: PWM 400Hz
+
+      SVT_UAVCAN_EN:
+        description:
+          short: Enable UAVCAN/DroneCAN ESC output
+          long: |
+            When enabled, the normalized throttle is sent to DroneCAN ESC nodes
+            via the existing UAVCAN_EC_FUNC1-8 function mapping. Operates
+            independently of timer group output (both can be active simultaneously).
+        type: int32
+        min: 0
+        max: 1
+        default: 0
+
+      SVT_RAMP_EN:
+        description:
+          short: Enable signal ramping on start/stop transitions
+          long: |
+            When enabled, an alpha (first-order IIR) filter is applied to the
+            throttle output during the start transition (0 -> target) and the
+            graceful stop transition (current -> 0). Dial adjustments during
+            steady RUNNING are applied directly without filtering.
+            E-stop (K0) always bypasses the ramp and releases immediately.
+        type: int32
+        min: 0
+        max: 1
         default: 1
+
+      SVT_THR_STEP:
+        description:
+          short: Throttle change per encoder quadrature pulse
+          long: |
+            Amount the normalized throttle (0.0–1.0) changes per raw quadrature
+            pulse from the EC11 driver. One physical detent produces 4 pulses,
+            so the effective step per click is 4 × SVT_THR_STEP.
+            Default 0.000625 gives 0.25% (0.0025) per detent click.
+        type: float
+        min: 0.0001
+        max: 0.02
+        default: 0.000625
+        decimal: 4
+
+      SVT_RAMP_TAU:
+        description:
+          short: Ramp filter time constant (seconds)
+          long: |
+            Time constant for the alpha filter used during start/stop ramp.
+            At t=tau the output reaches ~63% of the target; at t=3*tau ~95%.
+            Default 0.5 s gives a gentle ramp suitable for most bench testing.
+        type: float
+        min: 0.1
+        max: 5.0
+        default: 0.5
+        decimal: 2
+        unit: s

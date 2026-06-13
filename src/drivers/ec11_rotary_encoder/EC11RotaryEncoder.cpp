@@ -198,8 +198,8 @@ void EC11RotaryEncoder::process_encoder_step(bool a_level, bool b_level)
 	int8_t  step = kQuadTable[idx & 0x0Fu];
 
 	if (step != 0) {
-		_position      += step*4;
-		_delta         += step*4;
+		_position      += step;
+		_delta         += step;
 		_encoder_changed = true;
 	}
 

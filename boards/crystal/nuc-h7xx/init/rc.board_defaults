@@ -125,9 +125,24 @@ then
     st7789_display start
 fi
 
-# Drive all 8 motor channels by default
-param set-default SVT_NUM_MOT 8
+# INA238 I2C power monitor — supply voltage + current to the DUT.
+# Bus and address depend on the HAT hardware; confirm from schematic.
+#   Default address: 0x45 (A0=VCC); use 0x40 if A0=GND.
+#   -X = external I2C, -b = bus number (1 = I2C1/Arduino header), -k = keep running if unplugged.
+ina238 start -X -b 1 -a 0x45 -k
 
-# servo_test — bench motor test UI (encoder sets RPM, button enables output,
-# ESC telemetry on the display). Drives motors via actuator_test.
+# servo_test group protocol defaults (set before servo_test starts).
+#   SVT_GRP_A_MODE: Group A (ch1-4/TIM1) — 2=DShot300, 0=disabled
+#   SVT_GRP_B/C_MODE: Groups B/C — 0=disabled by default
+param set-default SVT_THR_STEP   0.000625
+param set-default SVT_GRP_A_MODE 2
+param set-default SVT_GRP_B_MODE 0
+param set-default SVT_GRP_C_MODE 0
+param set-default SVT_UAVCAN_EN  0
+param set-default SVT_RAMP_EN    1
+param set-default SVT_RAMP_TAU   0.5
+
+# servo_test — multi-protocol bench ESC/motor test UI.
+# State machine: CONFIG (hold K0 2s for setup) -> RUNNING (PUSH) -> CONFIG.
+# Drives motors via actuator_test topic (works while disarmed).
 servo_test start
